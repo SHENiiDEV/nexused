@@ -33,7 +33,6 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
     const [targetAudience, setTargetAudience] = useState('Senior Engineers, Tech Leads, Cloud Architects');
     const [estimatedHours, setEstimatedHours] = useState('6');
 
-    // Pipeline state
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeCourseId, setActiveCourseId] = useState<number | null>(null);
     const [progress, setProgress] = useState(0);
@@ -44,7 +43,6 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
 
     const pollingIntervalRef = useRef<any>(null);
 
-    // Clean up polling interval
     useEffect(() => {
         return () => {
             if (pollingIntervalRef.current) {
@@ -53,7 +51,6 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
         };
     }, []);
 
-    // Trigger AI generation
     const handleStartGeneration = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!topic.trim()) return;
@@ -95,8 +92,6 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
             }
 
             setActiveCourseId(data.course_id);
-
-            // Start real-time sync via polling + WebSocket listener
             startRealTimePolling(data.course_id);
         } catch (err: any) {
             setErrorMessage(err.message || 'Error triggering course generation.');
@@ -143,7 +138,7 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                     });
                 }
             } catch {
-                // Keep polling retry
+                // retry
             }
         }, 1200);
     };
@@ -154,42 +149,42 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
                 {/* Header */}
-                <div className="border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-xs font-mono font-semibold uppercase mb-2">
-                            <Cpu className="w-3.5 h-3.5" /> OpenAI Job Chaining Pipeline
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-xs font-mono font-semibold uppercase mb-2">
+                            <Cpu className="w-3.5 h-3.5 text-emerald-600" /> OpenAI Job Chaining Pipeline
                         </div>
-                        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
                             Autonomous Course Synthesizer
                         </h1>
-                        <p className="mt-1 text-slate-400 text-sm max-w-2xl">
-                            Enter any technological subject and retail price. The backend orchestrates chained jobs: Syllabus Generation (JSON) → Content Writing (Markdown) → Quiz Synthesis → Reverb Event Broadcast.
+                        <p className="mt-1 text-slate-600 text-sm max-w-2xl">
+                            Enter any technological subject and price. Chained background jobs generate the syllabus (JSON) → lesson longforms (Markdown) → comprehension quizzes with explanations.
                         </p>
                     </div>
 
                     <Link
                         href="/admin/transactions"
-                        className="self-start sm:self-auto px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white hover:border-amber-400 transition-colors flex items-center gap-1.5"
+                        className="self-start sm:self-auto px-4 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 shadow-2xs"
                     >
-                        <DollarSign className="w-3.5 h-3.5 text-amber-400" />
-                        <span>View Financial Ledger</span>
+                        <DollarSign className="w-3.5 h-3.5 text-slate-600" />
+                        <span>Financial Transactions Ledger</span>
                     </Link>
                 </div>
 
-                {/* Generator Form & Real-time Console */}
+                {/* Generator Form & Console */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Form Section */}
-                    <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
+                    <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-emerald-400" />
+                            <h2 className="text-base font-bold text-slate-950 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-emerald-600" />
                                 <span>Course Generation Parameters</span>
                             </h2>
                         </div>
 
                         <form onSubmit={handleStartGeneration} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                     Topic & Core Technology
                                 </label>
                                 <input
@@ -199,13 +194,13 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                     value={topic}
                                     onChange={(e) => setTopic(e.target.value)}
                                     placeholder="e.g. Distributed Systems Architecture with Go & Kafka"
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-800 disabled:opacity-50"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                         Retail Price (€ EUR)
                                     </label>
                                     <input
@@ -217,11 +212,11 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                         disabled={isGenerating}
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 font-mono text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 font-mono text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800 disabled:opacity-50"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                         Estimated Hours
                                     </label>
                                     <input
@@ -231,13 +226,13 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                         disabled={isGenerating}
                                         value={estimatedHours}
                                         onChange={(e) => setEstimatedHours(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 font-mono text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 font-mono text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800 disabled:opacity-50"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                     Target Audience
                                 </label>
                                 <input
@@ -245,12 +240,12 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                     disabled={isGenerating}
                                     value={targetAudience}
                                     onChange={(e) => setTargetAudience(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800 disabled:opacity-50"
                                 />
                             </div>
 
                             {errorMessage && (
-                                <div className="p-3 rounded-lg bg-rose-950/50 border border-rose-800 text-rose-200 text-xs flex items-center gap-2">
+                                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                                     <AlertCircle className="w-4 h-4 shrink-0" />
                                     <span>{errorMessage}</span>
                                 </div>
@@ -259,7 +254,7 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                             <button
                                 type="submit"
                                 disabled={isGenerating || !topic.trim()}
-                                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm transition-all shadow-lg shadow-emerald-950 disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-xs transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {isGenerating ? (
                                     <>
@@ -268,7 +263,7 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                     </>
                                 ) : (
                                     <>
-                                        <Play className="w-4 h-4 fill-current" />
+                                        <Play className="w-4 h-4 fill-current text-emerald-400" />
                                         <span>Dispatch AI Generation Chain</span>
                                     </>
                                 )}
@@ -276,17 +271,17 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                         </form>
                     </div>
 
-                    {/* Real-time Progress & Pipeline Log Stream */}
+                    {/* Real-time Progress & Console */}
                     <div className="lg:col-span-7 space-y-6">
                         {/* Progress Bar Display */}
-                        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+                        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Radio className={`w-4 h-4 ${isGenerating ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}`} />
-                                    <h3 className="text-sm font-bold text-white">Pipeline Execution Status</h3>
+                                    <Radio className={`w-4 h-4 ${isGenerating ? 'text-emerald-600 animate-pulse' : 'text-slate-400'}`} />
+                                    <h3 className="text-sm font-bold text-slate-900">Pipeline Execution Status</h3>
                                 </div>
-                                <span className="font-mono text-xs text-slate-400">
-                                    {isGenerating ? 'LIVE BROADCAST' : completedCourse ? 'COMPLETED' : 'IDLE'}
+                                <span className="font-mono text-xs font-semibold text-slate-500">
+                                    {isGenerating ? 'LIVE' : completedCourse ? 'COMPLETED' : 'IDLE'}
                                 </span>
                             </div>
 
@@ -296,14 +291,13 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                                 size="lg"
                             />
 
-                            {/* Completed Course banner */}
                             {completedCourse && (
-                                <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800 flex items-center justify-between gap-4 animate-in fade-in">
+                                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-4 animate-in fade-in">
                                     <div className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                                        <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                                         <div>
-                                            <h4 className="text-sm font-bold text-white">Course Published Successfully!</h4>
-                                            <p className="text-xs text-emerald-300/80">{completedCourse.title}</p>
+                                            <h4 className="text-sm font-bold text-slate-950">Course Published Successfully!</h4>
+                                            <p className="text-xs text-slate-600">{completedCourse.title}</p>
                                         </div>
                                     </div>
                                     <Link
@@ -317,9 +311,9 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                             )}
                         </div>
 
-                        {/* Pipeline Terminal Logs */}
-                        <div className="rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
-                            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-slate-800 text-xs text-slate-400">
+                        {/* Logs */}
+                        <div className="rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xs">
+                            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-400">
                                 <div className="flex items-center gap-2">
                                     <Terminal className="w-4 h-4 text-emerald-400" />
                                     <span className="font-mono font-semibold text-slate-200 text-[11px]">
@@ -333,13 +327,13 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
 
                             <div className="p-4 font-mono text-xs space-y-2 max-h-72 overflow-y-auto">
                                 {logs.length === 0 ? (
-                                    <div className="text-slate-600 italic py-6 text-center">
+                                    <div className="text-slate-500 italic py-6 text-center">
                                         No active pipeline execution. Submit the form to watch real-time events.
                                     </div>
                                 ) : (
                                     logs.map((log, idx) => (
                                         <div key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                                            <span className="text-slate-600 text-[11px] shrink-0">{log.time}</span>
+                                            <span className="text-slate-500 text-[11px] shrink-0">{log.time}</span>
                                             <span className="text-emerald-400 text-[11px] uppercase font-bold shrink-0">
                                                 [{log.progress}%]
                                             </span>
@@ -353,9 +347,9 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                 </div>
 
                 {/* Recently Created Courses */}
-                <div className="pt-6 border-t border-slate-800 space-y-4">
-                    <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-emerald-400" />
+                <div className="pt-6 border-t border-slate-200 space-y-4">
+                    <h3 className="text-lg font-bold text-slate-950 tracking-tight flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-slate-600" />
                         <span>Recently Synthesized Courses</span>
                     </h3>
 
@@ -363,19 +357,19 @@ export default function CourseGenerator({ recentCourses }: GeneratorProps) {
                         {recentCourses.map((c) => (
                             <div
                                 key={c.id}
-                                className="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors flex items-center justify-between"
+                                className="p-4 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-colors flex items-center justify-between shadow-2xs"
                             >
                                 <div className="min-w-0 pr-2">
-                                    <h4 className="text-sm font-semibold text-white truncate">{c.title}</h4>
-                                    <div className="text-xs text-slate-400 font-mono mt-0.5 flex items-center gap-2">
+                                    <h4 className="text-sm font-semibold text-slate-900 truncate">{c.title}</h4>
+                                    <div className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-2">
                                         <span>€{Number(c.price).toFixed(2)}</span>
                                         <span>•</span>
-                                        <span className="text-emerald-400 capitalize">{c.status}</span>
+                                        <span className="text-emerald-700 capitalize font-medium">{c.status}</span>
                                     </div>
                                 </div>
                                 <Link
                                     href={`/courses/${c.slug}`}
-                                    className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors shrink-0"
+                                    className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0"
                                 >
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
