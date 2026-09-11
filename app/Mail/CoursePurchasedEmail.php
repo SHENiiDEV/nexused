@@ -3,12 +3,15 @@
 namespace App\Mail;
 
 use App\Models\Course;
+use App\Models\Invoice;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\Billing\B2BInvoiceService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -17,13 +20,23 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    public ?Invoice $invoice = null;
+    public ?string $invoiceHtml = null;
+
     public function __construct(
         public Transaction $transaction,
         public User $user,
-        public ?Course $course = null
+        public ?Course $course = null,
+        ?Invoice $invoice = null
     ) {
         if (!$this->course && $this->transaction->course_id) {
             $this->course = $this->transaction->course;
+        }
+
+        $invoiceService = app(B2BInvoiceService::class);
+        $this->invoice = $invoice ?? $this->transaction->invoice ?? $invoiceService->getOrCreateInvoice($this->transaction);
+        if ($this->invoice) {
+            $this->invoiceHtml = $invoiceService->renderHtmlInvoice($this->invoice);
         }
     }
 
@@ -36,7 +49,7 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
                 config('mail.from.address', 'info@nexused.co.uk'),
                 config('mail.from.name', 'NexusEd Global')
             ),
-            subject: "Order Confirmation & Access Details — {$itemTitle} [{$this->transaction->transaction_ref}]",
+            subject: "Order Confirmation & Tax Invoice — {$itemTitle} [{$this->transaction->transaction_ref}]",
         );
     }
 
@@ -48,6 +61,7 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
                 'transaction' => $this->transaction,
                 'user' => $this->user,
                 'course' => $this->course,
+                'invoice' => $this->invoice,
                 'company' => config('company'),
                 'isCorporate' => (bool)$this->transaction->company_id || (($this->transaction->metadata['type'] ?? '') === 'b2b_license'),
             ]
@@ -56,6 +70,16 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
 
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+
+        if ($this->invoice && $this->invoiceHtml) {
+            $filename = "Invoice-{$this->invoice->invoice_number}.html";
+            $attachments[] = Attachment::fromData(
+                fn () => $this->invoiceHtml,
+                $filename
+            )->withMime('text/html');
+        }
+
+        return $attachments;
     }
 }

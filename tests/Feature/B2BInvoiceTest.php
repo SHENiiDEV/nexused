@@ -55,4 +55,42 @@ class B2BInvoiceTest extends TestCase
         $this->assertStringContainsString('xml', $response->headers->get('content-type'));
         $this->assertStringContainsString('<cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID>', $response->getContent());
     }
+
+    public function test_b2c_invoice_generation_and_html_render(): void
+    {
+        $student = User::firstWhere('role', 'student') ?? User::factory()->create(['role' => 'student']);
+        $course = \App\Models\Course::first() ?? \App\Models\Course::create([
+            'creator_id' => $student->id,
+            'title' => 'Kubernetes Production Engineering',
+            'slug' => 'k8s-prod',
+            'price' => 50.00,
+            'status' => 'published',
+            'estimated_hours' => 10,
+        ]);
+
+        $transaction = Transaction::create([
+            'user_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 50.00,
+            'currency' => 'EUR',
+            'payment_gateway' => 'cardaq',
+            'status' => 'completed',
+            'transaction_ref' => 'TXN-B2C-' . rand(100, 999),
+            'metadata' => ['type' => 'b2c_course'],
+        ]);
+
+        $service = new B2BInvoiceService();
+        $invoice = $service->createB2cInvoice($student, $transaction, $course);
+
+        $this->assertNotNull($invoice->invoice_number);
+        $this->assertStringStartsWith('NEX-INV-', $invoice->invoice_number);
+        $this->assertEquals(50.00, (float)$invoice->amount);
+        $this->assertGreaterThan(0, (float)$invoice->tax_amount);
+
+        $html = $service->renderHtmlInvoice($invoice);
+        $this->assertStringContainsString('TAX INVOICE', $html);
+        $this->assertStringContainsString($invoice->invoice_number, $html);
+        $this->assertStringContainsString('NexusEd Global', $html);
+        $this->assertStringContainsString('HRB 248910 B', $html);
+    }
 }

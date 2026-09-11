@@ -3,6 +3,7 @@
 namespace App\Services\Billing;
 
 use App\Models\Company;
+use App\Models\Course;
 use App\Models\Invoice;
 use App\Models\Transaction;
 use App\Models\User;
@@ -21,6 +22,11 @@ class B2BInvoiceService
         string $courseOrLicenseTitle,
         int $seats = 10
     ): Invoice {
+        $existing = Invoice::where('transaction_id', $transaction->id)->first();
+        if ($existing) {
+            return $existing;
+        }
+
         $seqNumber = str_pad((string)(Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
         $invoiceNumber = 'NEX-EU-' . date('Y') . '-' . $seqNumber;
 
@@ -67,6 +73,125 @@ class B2BInvoiceService
         ], $user->id);
 
         return $invoice;
+    }
+
+    /**
+     * Create an invoice for a B2C student course purchase
+     */
+    public function createB2cInvoice(
+        User $user,
+        Transaction $transaction,
+        Course $course
+    ): Invoice {
+        $existing = Invoice::where('transaction_id', $transaction->id)->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        $seqNumber = str_pad((string)(Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
+        $invoiceNumber = 'NEX-INV-' . date('Y') . '-' . $seqNumber;
+
+        $totalAmount = (float)$transaction->amount;
+        $vatRate = 0.19; // 19% standard EU VAT rate
+        $subtotal = round($totalAmount / (1 + $vatRate), 2);
+        $taxAmount = round($totalAmount - $subtotal, 2);
+
+        $customerName = trim($user->name . ' ' . ($user->surname ?? ''));
+        if (empty($customerName)) {
+            $customerName = $user->email;
+        }
+
+        $customerAddress = trim(implode(', ', array_filter([
+            $user->address_street,
+            $user->address_city,
+            $user->address_postcode,
+            $user->address_country,
+        ])));
+        if (empty($customerAddress)) {
+            $customerAddress = 'European Union / Global';
+        }
+
+        $items = [
+            [
+                'name' => "NexusEd Professional Masterclass Access: {$course->title}",
+                'quantity' => 1,
+                'unit_price' => $subtotal,
+                'tax_rate' => 19,
+                'tax_amount' => $taxAmount,
+                'total' => $totalAmount,
+            ],
+        ];
+
+        $invoice = Invoice::create([
+            'company_id' => null,
+            'user_id' => $user->id,
+            'transaction_id' => $transaction->id,
+            'invoice_number' => $invoiceNumber,
+            'amount' => $totalAmount,
+            'tax_amount' => $taxAmount,
+            'currency' => $transaction->currency ?? 'EUR',
+            'status' => 'paid',
+            'customer_name' => $customerName,
+            'customer_vat' => null,
+            'customer_address' => $customerAddress,
+            'issued_at' => now(),
+        ]);
+
+        $ublXml = $this->generateUblXml($invoice, $items, null);
+        $invoice->ubl_xml = $ublXml;
+        $invoice->save();
+
+        AuditLogger::record('invoice.issued_b2c', 'Invoice', $invoice->id, [
+            'invoice_number' => $invoiceNumber,
+            'total' => $totalAmount,
+            'user_id' => $user->id,
+        ], $user->id);
+
+        return $invoice;
+    }
+
+    /**
+     * Resolve or generate an invoice for any completed transaction
+     */
+    public function getOrCreateInvoice(Transaction $transaction): Invoice
+    {
+        $existing = Invoice::where('transaction_id', $transaction->id)->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        $user = $transaction->user;
+        if (!$user) {
+            $user = User::find($transaction->user_id);
+        }
+
+        $isCorporate = (bool)$transaction->company_id || (($transaction->metadata['type'] ?? '') === 'b2b_license');
+
+        if ($isCorporate) {
+            $company = $transaction->company ?? $user?->company ?? Company::first();
+            if ($company && $user) {
+                $seats = $transaction->metadata['seats'] ?? 10;
+                $title = $transaction->metadata['course_title'] ?? 'Corporate Training Package';
+                return $this->createInvoice($company, $user, $transaction, $title, $seats);
+            }
+        }
+
+        $course = $transaction->course;
+        if (!$course && $transaction->course_id) {
+            $course = \App\Models\Course::find($transaction->course_id);
+        }
+
+        if (!$course) {
+            $course = new Course([
+                'title' => $transaction->metadata['course_title'] ?? 'NexusEd Specialized Curriculum',
+                'category' => 'Technical Mastery',
+                'difficulty' => 'intermediate',
+                'slug' => 'nexused-course',
+                'price' => $transaction->amount,
+            ]);
+        }
+
+        return $this->createB2cInvoice($user ?? new User(['name' => 'NexusEd Student', 'email' => 'student@nexused.co.uk']), $transaction, $course);
     }
 
     /**
@@ -242,54 +367,77 @@ XML;
         $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
         $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
 
+        $isB2B = (bool)$invoice->company_id;
+        $transaction = $invoice->transaction;
+        $course = $transaction?->course;
+
+        if ($isB2B) {
+            $itemTitle = htmlspecialchars($transaction?->metadata['course_title'] ?? 'Enterprise Learning Seats Package');
+            $itemSubtitle = "Annual Corporate Team License with Full Skill Matrix, Terminal Labs & Verifiable Certifications";
+        } else {
+            $itemTitle = htmlspecialchars($course?->title ?? $transaction?->metadata['course_title'] ?? 'NexusEd Specialized Masterclass Access');
+            $itemSubtitle = "Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma";
+        }
+
+        $customerName = htmlspecialchars($invoice->customer_name ?? 'NexusEd Customer');
+        $customerAddress = nl2br(htmlspecialchars($invoice->customer_address ?? 'Europe'));
+        $customerVatHtml = !empty($invoice->customer_vat)
+            ? "<br><strong>VAT / Tax ID:</strong> " . htmlspecialchars($invoice->customer_vat)
+            : ($invoice->user ? "<br><strong>Account Email:</strong> " . htmlspecialchars($invoice->user->email) : "");
+
+        $paymentGateway = $transaction ? strtoupper(str_replace('_', ' ', $transaction->payment_gateway)) : 'ELECTRONIC TRANSFER';
+        $txnRef = $transaction ? htmlspecialchars($transaction->transaction_ref) : 'TXN-ONLINE';
+
         return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Invoice {$invoice->invoice_number} | NexusEd</title>
+    <title>Invoice {$invoice->invoice_number} | NexusEd Global</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.5; padding: 40px; margin: 0; background: #ffffff; }
-        .invoice-box { max-width: 800px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; }
-        .brand { font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.5; padding: 40px; margin: 0; background: #f8fafc; }
+        .invoice-box { max-width: 800px; margin: auto; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; }
+        .brand { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
         .brand span { color: #10b981; }
         .inv-meta { text-align: right; }
-        .inv-meta h1 { font-size: 20px; margin: 0 0 4px 0; color: #0f172a; }
+        .inv-meta h1 { font-size: 22px; margin: 0 0 4px 0; color: #0f172a; letter-spacing: -0.02em; }
         .inv-meta p { margin: 0; font-size: 13px; color: #64748b; }
         .parties { display: flex; justify-content: space-between; margin-bottom: 36px; gap: 40px; }
         .party { flex: 1; }
         .party-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 8px; }
         .party-name { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .party-desc { font-size: 13px; color: #475569; margin: 0; }
+        .party-desc { font-size: 13px; color: #475569; margin: 0; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
-        th { text-align: left; padding: 12px; background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 14px 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+        th { text-align: left; padding: 12px 14px; background: #f8fafc; font-size: 12px; font-weight: 700; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.03em; }
+        td { padding: 16px 14px; font-size: 13px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
         .text-right { text-align: right; }
-        .totals { margin-left: auto; width: 300px; margin-bottom: 40px; }
+        .totals { margin-left: auto; width: 320px; margin-bottom: 36px; }
         .total-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: #64748b; }
-        .total-row.grand { border-top: 2px solid #0f172a; margin-top: 6px; padding-top: 10px; font-size: 16px; font-weight: 800; color: #0f172a; }
-        .badge-paid { display: inline-block; background: #ecfdf5; color: #047857; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .footer { font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; text-align: center; }
-        .print-btn { display: inline-block; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
-        @media print { .print-btn { display: none; } body { padding: 0; } .invoice-box { border: none; box-shadow: none; padding: 0; } }
+        .total-row.grand { border-top: 2px solid #0f172a; margin-top: 8px; padding-top: 12px; font-size: 16px; font-weight: 800; color: #0f172a; }
+        .badge-paid { display: inline-block; background: #ecfdf5; color: #047857; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #a7f3d0; }
+        .footer { font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 24px; text-align: center; line-height: 1.6; }
+        .print-btn { display: inline-block; background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 700; margin-bottom: 20px; transition: background 0.2s; }
+        .print-btn:hover { background: #1e293b; }
+        @media print { .print-btn, .no-print { display: none !important; } body { padding: 0; background: #fff; } .invoice-box { border: none; box-shadow: none; padding: 0; width: 100%; max-width: 100%; } }
     </style>
 </head>
 <body>
-    <div style="text-align: right; max-width: 800px; margin: 0 auto 10px;">
-        <a href="javascript:window.print()" class="print-btn">Print / Save as PDF</a>
+    <div class="no-print" style="text-align: right; max-width: 800px; margin: 0 auto 12px;">
+        <a href="javascript:window.print()" class="print-btn">🖨️ Print / Save as PDF</a>
     </div>
     <div class="invoice-box">
         <div class="header">
             <div>
-                <div class="brand">Nexus<span>Ed</span></div>
-                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Next-Generation AI Educational SaaS</div>
+                <div class="brand">Nexus<span>Ed</span> <span style="font-size: 14px; font-weight: 500; color: #94a3b8;">Global</span></div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">High-Agency Technical &amp; Professional Education</div>
             </div>
             <div class="inv-meta">
                 <h1>TAX INVOICE</h1>
                 <p><strong>Invoice No:</strong> {$invoice->invoice_number}</p>
-                <p><strong>Date:</strong> {$dateFmt}</p>
-                <p style="margin-top: 6px;"><span class="badge-paid">Status: Paid</span></p>
+                <p><strong>Date of Issue:</strong> {$dateFmt}</p>
+                <p><strong>Payment Ref:</strong> {$txnRef}</p>
+                <p style="margin-top: 6px;"><span class="badge-paid">✓ Settled &amp; Paid ({$paymentGateway})</span></p>
             </div>
         </div>
 
@@ -300,17 +448,16 @@ XML;
                 <div class="party-desc">
                     {$companyAddress}<br>
                     <strong>Commercial Register:</strong> {$companyNumber}<br>
-                    <strong>Contact:</strong> {$companyEmail}<br>
-                    <strong>VAT / Tax ID:</strong> DE309482104<br>
-                    <strong>E-Invoicing Endpoint:</strong> 9482019482012
+                    <strong>Billing Inquiries:</strong> {$companyEmail}<br>
+                    <strong>VAT / Tax ID:</strong> DE309482104
                 </div>
             </div>
             <div class="party">
                 <div class="party-title">Billed To (Customer)</div>
-                <div class="party-name">{$invoice->customer_name}</div>
+                <div class="party-name">{$customerName}</div>
                 <div class="party-desc">
-                    {$invoice->customer_address}<br>
-                    <strong>VAT / Tax ID:</strong> {$invoice->customer_vat}
+                    {$customerAddress}
+                    {$customerVatHtml}
                 </div>
             </div>
         </div>
@@ -318,45 +465,45 @@ XML;
         <table>
             <thead>
                 <tr>
-                    <th>Description</th>
+                    <th>Item Description</th>
                     <th class="text-right">Qty</th>
-                    <th class="text-right">Unit Price</th>
-                    <th class="text-right">VAT</th>
-                    <th class="text-right">Amount</th>
+                    <th class="text-right">Unit Net</th>
+                    <th class="text-right">VAT Rate</th>
+                    <th class="text-right">Total Net</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>
-                        <strong>Enterprise Learning Seats Package</strong><br>
-                        <span style="font-size: 12px; color: #64748b;">Annual B2B Team License with Full Analytics & Certifications</span>
+                        <strong style="color: #0f172a; font-size: 14px;">{$itemTitle}</strong><br>
+                        <span style="font-size: 12px; color: #64748b;">{$itemSubtitle}</span>
                     </td>
                     <td class="text-right">1</td>
-                    <td class="text-right">€{$subtotalFmt}</td>
-                    <td class="text-right">19%</td>
-                    <td class="text-right">€{$subtotalFmt}</td>
+                    <td class="text-right" style="font-family: monospace;">€{$subtotalFmt}</td>
+                    <td class="text-right">19.0%</td>
+                    <td class="text-right" style="font-family: monospace; font-weight: 600;">€{$subtotalFmt}</td>
                 </tr>
             </tbody>
         </table>
 
         <div class="totals">
             <div class="total-row">
-                <span>Subtotal (Net):</span>
-                <span>€{$subtotalFmt}</span>
+                <span>Net Subtotal:</span>
+                <span style="font-family: monospace;">€{$subtotalFmt}</span>
             </div>
             <div class="total-row">
                 <span>EU Standard VAT (19%):</span>
-                <span>€{$taxFmt}</span>
+                <span style="font-family: monospace;">€{$taxFmt}</span>
             </div>
             <div class="total-row grand">
-                <span>Total Paid:</span>
-                <span>€{$totalFmt} {$invoice->currency}</span>
+                <span>Total Amount Paid:</span>
+                <span style="font-family: monospace;">€{$totalFmt} {$invoice->currency}</span>
             </div>
         </div>
 
         <div class="footer">
-            <p>{$companyName} • Commercial Register {$companyNumber} • Official Contact: {$companyEmail}</p>
-            <p>This invoice is electronically certified and fully conforms to Peppol BIS Billing 3.0 / EU Directive 2014/55/EU.</p>
+            <p style="margin: 0 0 4px 0;"><strong>{$companyName}</strong> &bull; Commercial Register {$companyNumber} &bull; Contact: {$companyEmail}</p>
+            <p style="margin: 0;">This tax invoice is electronically generated and digitally certified in accordance with EU Directive 2014/55/EU and Peppol BIS Billing 3.0 standards.</p>
         </div>
     </div>
 </body>

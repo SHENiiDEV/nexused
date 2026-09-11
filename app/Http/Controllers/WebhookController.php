@@ -105,17 +105,19 @@ class WebhookController extends Controller
                 'ref' => $transaction->transaction_ref,
             ], $transaction->user_id);
 
-            // Dispatch Confirmation / Receipt Email
+            // Generate official invoice and dispatch confirmation email with invoice attached
             try {
+                $invoice = $invoiceService->getOrCreateInvoice($transaction);
                 if ($transaction->user && $transaction->user->email) {
                     Mail::to($transaction->user->email)->send(new CoursePurchasedEmail(
                         $transaction,
                         $transaction->user,
-                        $transaction->course
+                        $transaction->course,
+                        $invoice
                     ));
                 }
             } catch (\Throwable $e) {
-                Log::error("[Email] Failed to send webhook course purchased email: " . $e->getMessage());
+                Log::error("[Email] Failed to send webhook course purchased email with invoice: " . $e->getMessage());
             }
 
         } elseif ($result['status'] === 'failed') {

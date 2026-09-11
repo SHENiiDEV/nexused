@@ -45,4 +45,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function invoice(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 }

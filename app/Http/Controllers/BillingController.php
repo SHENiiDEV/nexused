@@ -141,18 +141,20 @@ class BillingController extends Controller
             'amount' => $transaction->amount,
         ]);
 
-        // Dispatch Confirmation / Receipt Email
+        // Generate official invoice and dispatch confirmation email with invoice attached
         try {
+            $invoice = $invoiceService->getOrCreateInvoice($transaction);
             $recipientUser = $transaction->user ?? auth()->user();
             if ($recipientUser && $recipientUser->email) {
                 Mail::to($recipientUser->email)->send(new CoursePurchasedEmail(
                     $transaction,
                     $recipientUser,
-                    $transaction->course
+                    $transaction->course,
+                    $invoice
                 ));
             }
         } catch (\Throwable $e) {
-            Log::error("[Email] Failed to send course purchased email: " . $e->getMessage());
+            Log::error("[Email] Failed to send course purchased email with invoice: " . $e->getMessage());
         }
 
         return response()->json([

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation & Access Receipt</title>
+    <title>Order Confirmation & Tax Invoice</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; -webkit-font-smoothing: antialiased;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; padding: 40px 10px;">
@@ -66,12 +66,44 @@
                                 </tr>
                             </table>
 
+                            <!-- Official Invoice Attachment Notice Box -->
+                            @if(isset($invoice))
+                            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 0 0 24px 0; background-color: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 18px 20px;">
+                                <tr>
+                                    <td>
+                                        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td width="36" valign="top" style="padding-right: 12px;">
+                                                    <div style="font-size: 24px; line-height: 1;">📄</div>
+                                                </td>
+                                                <td>
+                                                    <div style="font-size: 13px; font-weight: 800; color: #166534; margin-bottom: 2px;">
+                                                        Official Tax Invoice Attached
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #15803d; line-height: 1.5;">
+                                                        Invoice No: <strong style="font-family: monospace; color: #0f172a;">{{ $invoice->invoice_number }}</strong> &bull; Total: <strong style="color: #0f172a;">&euro;{{ number_format((float)$invoice->amount, 2) }} {{ $invoice->currency }}</strong><br>
+                                                        Attached file: <code style="background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #14532d;">Invoice-{{ $invoice->invoice_number }}.html</code> (Print or Save as PDF).
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+
                             <!-- Order / Payment Receipt Details -->
                             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 0 0 24px 0; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
                                 <tr>
                                     <td style="padding-bottom: 10px; font-size: 13px; color: #64748b; font-weight: 500;">Transaction Reference:</td>
                                     <td style="padding-bottom: 10px; font-size: 13px; color: #0f172a; font-weight: 700; text-align: right; font-family: monospace;">{{ $transaction->transaction_ref }}</td>
                                 </tr>
+                                @if(isset($invoice))
+                                <tr>
+                                    <td style="padding-bottom: 10px; font-size: 13px; color: #64748b; font-weight: 500;">Invoice Number:</td>
+                                    <td style="padding-bottom: 10px; font-size: 13px; color: #0f172a; font-weight: 700; text-align: right; font-family: monospace;">{{ $invoice->invoice_number }}</td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <td style="padding-bottom: 10px; font-size: 13px; color: #64748b; font-weight: 500;">Amount Paid:</td>
                                     <td style="padding-bottom: 10px; font-size: 15px; color: #0f172a; font-weight: 800; text-align: right; font-family: monospace;">&euro;{{ number_format((float)$transaction->amount, 2) }} {{ $transaction->currency }}</td>
@@ -108,7 +140,7 @@
                             </table>
 
                             <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.6; color: #64748b; text-align: center;">
-                                Need an invoice copy or official VAT receipt? Visit your <a href="{{ config('app.url') }}/dashboard" style="color: #059669; font-weight: 600; text-decoration: underline;">User Dashboard</a> or reply directly to this email.
+                                Need assistance or a duplicate VAT invoice? Visit your <a href="{{ config('app.url') }}/dashboard" style="color: #059669; font-weight: 600; text-decoration: underline;">User Dashboard</a> or contact <a href="mailto:{{ $company['email'] ?? 'info@nexused.co.uk' }}" style="color: #059669; font-weight: 600;">{{ $company['email'] ?? 'info@nexused.co.uk' }}</a>.
                             </p>
                         </td>
                     </tr>
@@ -131,7 +163,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding-top: 16px; font-size: 10px; color: #64748b; border-top: 1px solid #1e293b; margin-top: 16px;">
-                                        &copy; {{ date('Y') }} NexusEd Global. Official electronic order confirmation.
+                                        &copy; {{ date('Y') }} NexusEd Global. Official electronic order confirmation with attached tax invoice.
                                     </td>
                                 </tr>
                             </table>

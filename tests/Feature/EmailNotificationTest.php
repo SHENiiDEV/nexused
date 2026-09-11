@@ -111,24 +111,30 @@ class EmailNotificationTest extends TestCase
 
     public function test_course_purchased_email_view_renders_properly(): void
     {
-        $user = User::factory()->make([
+        $user = User::factory()->create([
             'name' => 'Jane',
             'surname' => 'Miller',
             'email' => 'jane.miller@example.com',
         ]);
 
-        $course = new Course([
+        $course = Course::create([
+            'creator_id' => $user->id,
             'title' => 'Cloud Architecture Masterclass',
             'category' => 'Cloud & DevOps',
             'difficulty' => 'intermediate',
             'slug' => 'cloud-architecture-masterclass',
             'price' => 59.00,
+            'status' => 'published',
+            'estimated_hours' => 10,
         ]);
 
-        $transaction = new Transaction([
+        $transaction = Transaction::create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
             'amount' => 59.00,
             'currency' => 'EUR',
             'payment_gateway' => 'apple_pay',
+            'status' => 'completed',
             'transaction_ref' => 'TXN-TESTCONFIRM',
             'metadata' => ['course_title' => 'Cloud Architecture Masterclass'],
         ]);
@@ -141,5 +147,10 @@ class EmailNotificationTest extends TestCase
         $this->assertStringContainsString('TXN-TESTCONFIRM', $html);
         $this->assertStringContainsString('59.00 EUR', $html);
         $this->assertStringContainsString('Cloud Architecture Masterclass', $html);
+        $this->assertStringContainsString('Official Tax Invoice Attached', $html);
+
+        $attachments = $mailable->attachments();
+        $this->assertCount(1, $attachments);
+        $this->assertNotNull($mailable->invoice);
     }
 }
