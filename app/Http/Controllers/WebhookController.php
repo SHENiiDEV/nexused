@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CoursePurchasedEmail;
 use App\Models\Enrollment;
 use App\Models\Transaction;
 use App\Services\Audit\AuditLogger;
@@ -10,6 +11,7 @@ use App\Services\Billing\PaymentGatewayManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class WebhookController extends Controller
 {
@@ -102,6 +104,19 @@ class WebhookController extends Controller
                 'amount' => $transaction->amount,
                 'ref' => $transaction->transaction_ref,
             ], $transaction->user_id);
+
+            // Dispatch Confirmation / Receipt Email
+            try {
+                if ($transaction->user && $transaction->user->email) {
+                    Mail::to($transaction->user->email)->send(new CoursePurchasedEmail(
+                        $transaction,
+                        $transaction->user,
+                        $transaction->course
+                    ));
+                }
+            } catch (\Throwable $e) {
+                Log::error("[Email] Failed to send webhook course purchased email: " . $e->getMessage());
+            }
 
         } elseif ($result['status'] === 'failed') {
             $transaction->status = 'failed';

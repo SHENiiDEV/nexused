@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CoursePurchasedEmail;
 use App\Models\Company;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -12,6 +13,8 @@ use App\Services\Billing\PaymentGatewayManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -137,6 +140,20 @@ class BillingController extends Controller
             'reference' => $transaction->transaction_ref,
             'amount' => $transaction->amount,
         ]);
+
+        // Dispatch Confirmation / Receipt Email
+        try {
+            $recipientUser = $transaction->user ?? auth()->user();
+            if ($recipientUser && $recipientUser->email) {
+                Mail::to($recipientUser->email)->send(new CoursePurchasedEmail(
+                    $transaction,
+                    $recipientUser,
+                    $transaction->course
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::error("[Email] Failed to send course purchased email: " . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

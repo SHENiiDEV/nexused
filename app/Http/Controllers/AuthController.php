@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WelcomeEmail;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -130,6 +133,13 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        // Dispatch Welcome Email
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (\Throwable $e) {
+            Log::error("[Email] Failed to send welcome email: " . $e->getMessage());
+        }
 
         if ($user->isCorporate()) {
             return redirect()->route('corporate.dashboard');
