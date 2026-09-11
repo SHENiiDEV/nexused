@@ -92,5 +92,9 @@ class B2BInvoiceTest extends TestCase
         $this->assertStringContainsString($invoice->invoice_number, $html);
         $this->assertStringContainsString('NexusEd Global', $html);
         $this->assertStringContainsString('HRB 248910 B', $html);
+
+        $pdfBinary = $service->generatePdfInvoice($invoice);
+        $this->assertNotEmpty($pdfBinary);
+        $this->assertStringStartsWith('%PDF-', $pdfBinary);
     }
 }

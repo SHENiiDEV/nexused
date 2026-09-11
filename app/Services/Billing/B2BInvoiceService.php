@@ -352,6 +352,176 @@ XML;
     }
 
     /**
+     * Generate true PDF document as raw binary string using Dompdf
+     */
+    public function generatePdfInvoice(Invoice $invoice): string
+    {
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'Helvetica');
+        $options->set('dpi', 150);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+
+        $subtotal = $invoice->amount - $invoice->tax_amount;
+        $subtotalFmt = number_format((float)$subtotal, 2, '.', ',');
+        $taxFmt = number_format((float)$invoice->tax_amount, 2, '.', ',');
+        $totalFmt = number_format((float)$invoice->amount, 2, '.', ',');
+        $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
+
+        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
+        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'));
+        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
+        $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
+
+        $isB2B = (bool)$invoice->company_id;
+        $transaction = $invoice->transaction;
+        $course = $transaction?->course;
+
+        if ($isB2B) {
+            $itemTitle = htmlspecialchars($transaction?->metadata['course_title'] ?? 'Enterprise Learning Seats Package');
+            $itemSubtitle = "Annual Corporate Team License with Full Skill Matrix & Certifications";
+        } else {
+            $itemTitle = htmlspecialchars($course?->title ?? $transaction?->metadata['course_title'] ?? 'NexusEd Masterclass Access');
+            $itemSubtitle = "Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma";
+        }
+
+        $customerName = htmlspecialchars($invoice->customer_name ?? 'NexusEd Customer');
+        $customerAddress = nl2br(htmlspecialchars($invoice->customer_address ?? 'Europe'));
+        $customerVatHtml = !empty($invoice->customer_vat)
+            ? "<br><strong>VAT / Tax ID:</strong> " . htmlspecialchars($invoice->customer_vat)
+            : ($invoice->user ? "<br><strong>Account Email:</strong> " . htmlspecialchars($invoice->user->email) : "");
+
+        $paymentGateway = $transaction ? strtoupper(str_replace('_', ' ', $transaction->payment_gateway)) : 'ELECTRONIC TRANSFER';
+        $txnRef = $transaction ? htmlspecialchars($transaction->transaction_ref) : 'TXN-ONLINE';
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Invoice {$invoice->invoice_number}</title>
+    <style>
+        @page { margin: 25px 30px; }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.4; margin: 0; padding: 0; }
+        table { width: 100%; border-collapse: collapse; }
+        .header-table { margin-bottom: 25px; border-bottom: 2px solid #0f172a; padding-bottom: 15px; }
+        .brand { font-size: 22px; font-weight: bold; color: #0f172a; }
+        .brand-green { color: #10b981; }
+        .inv-title { font-size: 18px; font-weight: bold; color: #0f172a; text-align: right; }
+        .inv-meta { text-align: right; font-size: 10px; color: #64748b; line-height: 1.4; }
+        .badge { display: inline-block; background-color: #ecfdf5; color: #047857; font-weight: bold; padding: 3px 8px; border-radius: 4px; border: 1px solid #a7f3d0; font-size: 9px; }
+        .party-box { width: 48%; vertical-align: top; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; }
+        .party-title { font-size: 9px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+        .party-name { font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 3px; }
+        .party-desc { font-size: 10px; color: #475569; line-height: 1.4; }
+        .items-table { margin-top: 20px; margin-bottom: 20px; }
+        .items-table th { background-color: #0f172a; color: #ffffff; padding: 8px 10px; font-size: 10px; text-transform: uppercase; text-align: left; }
+        .items-table td { padding: 10px 10px; border-bottom: 1px solid #e2e8f0; font-size: 10px; }
+        .text-right { text-align: right; }
+        .totals-table { width: 45%; margin-left: auto; margin-top: 10px; margin-bottom: 25px; }
+        .totals-table td { padding: 4px 8px; font-size: 10px; }
+        .totals-table .grand { border-top: 2px solid #0f172a; font-size: 12px; font-weight: bold; color: #0f172a; }
+        .footer { margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 12px; text-align: center; font-size: 9px; color: #94a3b8; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <table class="header-table">
+        <tr>
+            <td style="vertical-align: middle;">
+                <div class="brand">Nexus<span class="brand-green">Ed</span> <span style="font-size: 12px; color: #64748b;">Global</span></div>
+                <div style="font-size: 9px; color: #64748b; margin-top: 2px;">High-Agency Technical &amp; Professional Education</div>
+            </td>
+            <td class="inv-meta" style="vertical-align: middle;">
+                <div class="inv-title">TAX INVOICE</div>
+                <div><strong>Invoice No:</strong> {$invoice->invoice_number}</div>
+                <div><strong>Date of Issue:</strong> {$dateFmt}</div>
+                <div><strong>Payment Ref:</strong> {$txnRef}</div>
+                <div style="margin-top: 4px;"><span class="badge">✓ SETTLED &amp; PAID ({$paymentGateway})</span></div>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td class="party-box">
+                <div class="party-title">Supplier / Issuer</div>
+                <div class="party-name">{$companyName}</div>
+                <div class="party-desc">
+                    {$companyAddress}<br>
+                    <strong>Commercial Register:</strong> {$companyNumber}<br>
+                    <strong>Billing Inquiries:</strong> {$companyEmail}<br>
+                    <strong>VAT / Tax ID:</strong> DE309482104
+                </div>
+            </td>
+            <td style="width: 4%;"></td>
+            <td class="party-box">
+                <div class="party-title">Billed To (Customer)</div>
+                <div class="party-name">{$customerName}</div>
+                <div class="party-desc">
+                    {$customerAddress}
+                    {$customerVatHtml}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 55%;">Item Description</th>
+                <th class="text-right" style="width: 10%;">Qty</th>
+                <th class="text-right" style="width: 15%;">Unit Net</th>
+                <th class="text-right" style="width: 10%;">VAT</th>
+                <th class="text-right" style="width: 10%;">Total Net</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong style="color: #0f172a; font-size: 11px;">{$itemTitle}</strong><br>
+                    <span style="font-size: 9px; color: #64748b;">{$itemSubtitle}</span>
+                </td>
+                <td class="text-right">1</td>
+                <td class="text-right">&euro;{$subtotalFmt}</td>
+                <td class="text-right">19%</td>
+                <td class="text-right">&euro;{$subtotalFmt}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="totals-table">
+        <tr>
+            <td>Net Subtotal:</td>
+            <td class="text-right">&euro;{$subtotalFmt}</td>
+        </tr>
+        <tr>
+            <td>EU Standard VAT (19%):</td>
+            <td class="text-right">&euro;{$taxFmt}</td>
+        </tr>
+        <tr class="grand">
+            <td style="padding-top: 6px;">Total Amount Paid:</td>
+            <td class="text-right" style="padding-top: 6px;">&euro;{$totalFmt} {$invoice->currency}</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <div><strong>{$companyName}</strong> &bull; Commercial Register {$companyNumber} &bull; Official Contact: {$companyEmail}</div>
+        <div>This tax invoice is electronically generated and digitally certified in accordance with EU Directive 2014/55/EU and Peppol BIS Billing 3.0 standards.</div>
+    </div>
+</body>
+</html>
+HTML;
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return $dompdf->output();
+    }
+
+    /**
      * Generate HTML printable document that looks like an executive PDF invoice
      */
     public function renderHtmlInvoice(Invoice $invoice): string

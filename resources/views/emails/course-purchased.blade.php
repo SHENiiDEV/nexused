@@ -82,7 +82,7 @@
                                                     </div>
                                                     <div style="font-size: 12px; color: #15803d; line-height: 1.5;">
                                                         Invoice No: <strong style="font-family: monospace; color: #0f172a;">{{ $invoice->invoice_number }}</strong> &bull; Total: <strong style="color: #0f172a;">&euro;{{ number_format((float)$invoice->amount, 2) }} {{ $invoice->currency }}</strong><br>
-                                                        Attached file: <code style="background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #14532d;">Invoice-{{ $invoice->invoice_number }}.html</code> (Print or Save as PDF).
+                                                        Attached file: <code style="background-color: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #14532d;">Invoice-{{ $invoice->invoice_number }}.pdf</code> (Official PDF Tax Invoice).
                                                     </div>
                                                 </td>
                                             </tr>
