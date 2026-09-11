@@ -45,14 +45,14 @@ class ExportCoursesCommand extends Command
                                 'is_preview' => (bool)$lesson->is_preview,
                                 'quizzes' => $lesson->quizzes->map(function ($quiz) {
                                     return [
-                                        'question' => $quiz->question,
+                                        'question_text' => $quiz->question_text ?? 'Comprehension Check',
                                         'explanation' => $quiz->explanation,
-                                        'xp_reward' => $quiz->xp_reward,
-                                        'options' => $quiz->options->map(function ($opt) {
+                                        'order' => $quiz->order ?? 1,
+                                        'options' => $quiz->options->map(function ($opt, $optIdx) {
                                             return [
                                                 'option_text' => $opt->option_text,
                                                 'is_correct' => (bool)$opt->is_correct,
-                                                'explanation' => $opt->explanation,
+                                                'order' => $opt->order ?? ($optIdx + 1),
                                             ];
                                         })->toArray(),
                                     ];

@@ -97,21 +97,28 @@ class ImportCoursesCommand extends Command
                                 );
 
                                 if (!empty($lVal['quizzes'])) {
-                                    foreach ($lVal['quizzes'] as $qVal) {
+                                    // Remove previous quizzes for idempotent re-import
+                                    $lesson->quizzes()->delete();
+
+                                    foreach ($lVal['quizzes'] as $qIdx => $qVal) {
+                                        $questionText = $qVal['question_text']
+                                            ?? $qVal['question']
+                                            ?? 'What is the primary architectural advantage demonstrated in this module?';
+
                                         $quiz = Quiz::create([
                                             'lesson_id' => $lesson->id,
-                                            'question' => $qVal['question'],
+                                            'question_text' => $questionText,
                                             'explanation' => $qVal['explanation'] ?? null,
-                                            'xp_reward' => $qVal['xp_reward'] ?? 20,
+                                            'order' => $qVal['order'] ?? ($qIdx + 1),
                                         ]);
 
                                         if (!empty($qVal['options'])) {
-                                            foreach ($qVal['options'] as $optVal) {
+                                            foreach ($qVal['options'] as $optIdx => $optVal) {
                                                 QuizOption::create([
                                                     'quiz_id' => $quiz->id,
-                                                    'option_text' => $optVal['option_text'],
+                                                    'option_text' => $optVal['option_text'] ?? 'Option ' . ($optIdx + 1),
                                                     'is_correct' => (bool)($optVal['is_correct'] ?? false),
-                                                    'explanation' => $optVal['explanation'] ?? null,
+                                                    'order' => $optVal['order'] ?? ($optIdx + 1),
                                                 ]);
                                             }
                                         }
