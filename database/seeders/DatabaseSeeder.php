@@ -265,6 +265,11 @@ class DatabaseSeeder extends Seeder
             'ip_address' => '127.0.0.1',
             'created_at' => now()->subDays(10),
         ]);
+
+        // 7. Seed Full 63-Course Catalog
+        $this->call([
+            FullCatalogSeeder::class,
+        ]);
     }
 
     protected function seedCourseContent(Course $course): void
