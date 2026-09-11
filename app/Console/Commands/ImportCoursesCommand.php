@@ -101,9 +101,10 @@ class ImportCoursesCommand extends Command
                                     $lesson->quizzes()->delete();
 
                                     foreach ($lVal['quizzes'] as $qIdx => $qVal) {
-                                        $questionText = $qVal['question_text']
-                                            ?? $qVal['question']
-                                            ?? 'What is the primary architectural advantage demonstrated in this module?';
+                                        $rawQuestion = $qVal['question_text'] ?? $qVal['question'] ?? null;
+                                        $questionText = (!empty($rawQuestion) && is_string($rawQuestion))
+                                            ? $rawQuestion
+                                            : 'Core Concept Verification & Comprehension Check';
 
                                         $quiz = Quiz::create([
                                             'lesson_id' => $lesson->id,
