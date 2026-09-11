@@ -79,6 +79,8 @@ PROMPT;
         $course->generation_progress = 25;
         $course->save();
 
+        \App\Services\Ai\CourseThumbnailGenerator::generate($course);
+
         event(new CourseGenerationProgress(
             $course->id,
             25,
@@ -89,8 +91,9 @@ PROMPT;
         $moduleOrder = 1;
         $chainJobs = [];
         $previousLessonTitle = null;
+        $modules = array_slice($data['modules'] ?? [], 0, 3);
 
-        foreach ($data['modules'] ?? [] as $modData) {
+        foreach ($modules as $modData) {
             $module = Module::create([
                 'course_id' => $course->id,
                 'title' => $modData['title'] ?? "Module {$moduleOrder}",
@@ -99,7 +102,8 @@ PROMPT;
             ]);
 
             $lessonOrder = 1;
-            foreach ($modData['lessons'] ?? [] as $lesData) {
+            $lessons = array_slice($modData['lessons'] ?? [], 0, 3);
+            foreach ($lessons as $lesData) {
                 $lesson = Lesson::create([
                     'module_id' => $module->id,
                     'title' => $lesData['title'] ?? "Lesson {$lessonOrder}",

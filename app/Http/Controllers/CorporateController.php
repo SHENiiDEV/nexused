@@ -23,26 +23,16 @@ use Inertia\Response;
 
 class CorporateController extends Controller
 {
-    public function dashboard(): Response
+    public function dashboard()
     {
         $user = auth()->user();
         $company = $user->company;
 
         if (!$company) {
-            // Create a default company for the corporate user if none exists
-            $company = Company::firstOrCreate(
-                ['billing_email' => $user->email],
-                [
-                    'name' => 'Acme Enterprise Corp',
-                    'vat_number' => 'DE389201940',
-                    'billing_address' => 'Friedrichstraße 200, 10117 Berlin, Germany',
-                    'country_code' => 'DE',
-                    'max_seats' => 20,
-                    'used_seats' => 3,
-                ]
+            return redirect()->route('student.dashboard')->with(
+                'error',
+                'No corporate organization found for your account. Please register as a Corporate account or contact your team administrator.'
             );
-            $user->company_id = $company->id;
-            $user->save();
         }
 
         // Team members under this company
@@ -60,7 +50,7 @@ class CorporateController extends Controller
 
             return [
                 'id' => $emp->id,
-                'name' => $emp->name,
+                'name' => $emp->name . ($emp->surname ? ' ' . $emp->surname : ''),
                 'email' => $emp->email,
                 'role' => $emp->role,
                 'enrolled_courses' => $enrollmentCount,
@@ -77,12 +67,75 @@ class CorporateController extends Controller
         // Available published courses for seat assignment
         $courses = Course::where('status', 'published')->get();
 
+        // Platform users that can be added to this company
+        $availableUsers = User::where(function ($query) use ($company) {
+            $query->whereNull('company_id')
+                ->orWhere('company_id', '!=', $company->id);
+        })
+            ->where('id', '!=', $user->id)
+            ->orderBy('name')
+            ->get(['id', 'name', 'surname', 'email', 'role'])
+            ->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name . ($u->surname ? ' ' . $u->surname : ''),
+                'email' => $u->email,
+                'role' => $u->role,
+            ]);
+
         return Inertia::render('Corporate/Dashboard', [
             'company' => $company,
             'employees' => $employeeData,
             'invoices' => $invoices,
             'courses' => $courses,
+            'availableUsers' => $availableUsers,
         ]);
+    }
+
+    /**
+     * Add an existing platform user to corporate company
+     */
+    public function addPlatformUser(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'course_id' => 'nullable|exists:courses,id',
+        ]);
+
+        $company = auth()->user()->company;
+        if (!$company) {
+            return redirect()->route('student.dashboard')->with('error', 'Corporate organization not found.');
+        }
+
+        if ($company->used_seats >= $company->max_seats) {
+            return back()->withErrors(['seats' => 'Maximum corporate license seats reached. Please upgrade your seat quota.']);
+        }
+
+        $platformUser = User::findOrFail($validated['user_id']);
+        if ($platformUser->company_id === $company->id) {
+            return back()->withErrors(['user_id' => 'This user is already part of your team.']);
+        }
+
+        $platformUser->company_id = $company->id;
+        $platformUser->save();
+
+        $company->increment('used_seats');
+
+        if (!empty($validated['course_id'])) {
+            Enrollment::firstOrCreate([
+                'user_id' => $platformUser->id,
+                'course_id' => $validated['course_id'],
+            ], [
+                'company_id' => $company->id,
+            ]);
+        }
+
+        AuditLogger::record('seat.allocated', 'Company', $company->id, [
+            'employee_id' => $platformUser->id,
+            'employee_email' => $platformUser->email,
+            'seats_used' => $company->used_seats,
+        ]);
+
+        return back()->with('success', "Platform user {$platformUser->name} ({$platformUser->email}) successfully added to your corporate organization.");
     }
 
     public function inviteEmployee(Request $request): RedirectResponse

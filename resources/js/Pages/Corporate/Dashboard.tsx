@@ -29,24 +29,58 @@ interface EmployeeMetric {
     created_at: string;
 }
 
+interface PlatformUser {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+}
+
 interface DashboardProps {
     company: Company;
     employees: EmployeeMetric[];
     invoices: Invoice[];
     courses: Course[];
+    availableUsers?: PlatformUser[];
 }
 
-export default function Dashboard({ company, employees, invoices, courses }: DashboardProps) {
+export default function Dashboard({ company, employees, invoices, courses, availableUsers = [] }: DashboardProps) {
+    const [inviteMode, setInviteMode] = useState<'platform' | 'email'>('platform');
+    const [selectedUserId, setSelectedUserId] = useState<number | ''>('');
     const [inviteName, setInviteName] = useState('');
     const [inviteEmail, setInviteEmail] = useState('');
     const [selectedCourseId, setSelectedCourseId] = useState<number | ''>('');
-    const [isInviting, setIsInviting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const seatUsagePercent = Math.round((company.used_seats / Math.max(1, company.max_seats)) * 100);
 
+    const handleAddPlatformUser = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedUserId) return;
+        setIsSubmitting(true);
+
+        router.post(
+            '/corporate/add-platform-user',
+            {
+                user_id: selectedUserId,
+                course_id: selectedCourseId || null,
+            },
+            {
+                onSuccess: () => {
+                    setSelectedUserId('');
+                    setSelectedCourseId('');
+                    setIsSubmitting(false);
+                },
+                onError: () => {
+                    setIsSubmitting(false);
+                },
+            }
+        );
+    };
+
     const handleInvite = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsInviting(true);
+        setIsSubmitting(true);
 
         router.post(
             '/corporate/invite',
@@ -60,10 +94,10 @@ export default function Dashboard({ company, employees, invoices, courses }: Das
                     setInviteName('');
                     setInviteEmail('');
                     setSelectedCourseId('');
-                    setIsInviting(false);
+                    setIsSubmitting(false);
                 },
                 onError: () => {
-                    setIsInviting(false);
+                    setIsSubmitting(false);
                 },
             }
         );
@@ -212,69 +246,155 @@ export default function Dashboard({ company, employees, invoices, courses }: Das
                         </div>
                     </div>
 
-                    {/* Invite Employee Form */}
+                    {/* Seat Allocation Form (Platform User or Email Invite) */}
                     <div className="lg:col-span-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-5">
-                        <div className="flex items-center gap-2">
-                            <Plus className="w-5 h-5 text-emerald-600" />
-                            <h3 className="text-base font-bold text-slate-950">Allocate Seat & Invite</h3>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Plus className="w-5 h-5 text-emerald-600" />
+                                <h3 className="text-base font-bold text-slate-950">Add Team Member</h3>
+                            </div>
+                            <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 font-semibold">
+                                {company.max_seats - company.used_seats} seats left
+                            </span>
                         </div>
 
-                        <form onSubmit={handleInvite} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Full Name
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={inviteName}
-                                    onChange={(e) => setInviteName(e.target.value)}
-                                    placeholder="Jane Doe"
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-800"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Company Email
-                                </label>
-                                <input
-                                    type="email"
-                                    required
-                                    value={inviteEmail}
-                                    onChange={(e) => setInviteEmail(e.target.value)}
-                                    placeholder="jane.doe@company.com"
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-800"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Assign Initial Course
-                                </label>
-                                <select
-                                    value={selectedCourseId}
-                                    onChange={(e) => setSelectedCourseId(e.target.value ? Number(e.target.value) : '')}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800"
-                                >
-                                    <option value="">No Course (General Seat)</option>
-                                    {courses.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.title}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
+                        {/* Mode Switcher */}
+                        <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
                             <button
-                                type="submit"
-                                disabled={isInviting || company.used_seats >= company.max_seats}
-                                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-xs transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                type="button"
+                                onClick={() => setInviteMode('platform')}
+                                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                    inviteMode === 'platform'
+                                        ? 'bg-white text-slate-950 shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900'
+                                }`}
                             >
-                                <Mail className="w-4 h-4" />
-                                <span>{isInviting ? 'Inviting...' : 'Send License Invitation'}</span>
+                                Existing User
                             </button>
-                        </form>
+                            <button
+                                type="button"
+                                onClick={() => setInviteMode('email')}
+                                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                    inviteMode === 'email'
+                                        ? 'bg-white text-slate-950 shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900'
+                                }`}
+                            >
+                                Invite via Email
+                            </button>
+                        </div>
+
+                        {inviteMode === 'platform' ? (
+                            <form onSubmit={handleAddPlatformUser} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Select Platform User
+                                    </label>
+                                    <select
+                                        required
+                                        value={selectedUserId}
+                                        onChange={(e) => setSelectedUserId(e.target.value ? Number(e.target.value) : '')}
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800"
+                                    >
+                                        <option value="">Select registered user...</option>
+                                        {availableUsers.map((u) => (
+                                            <option key={u.id} value={u.id}>
+                                                {u.name} ({u.email})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {availableUsers.length === 0 && (
+                                        <p className="text-[11px] text-slate-400 mt-1">
+                                            No other unregistered platform users found.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Assign Initial Course
+                                    </label>
+                                    <select
+                                        value={selectedCourseId}
+                                        onChange={(e) => setSelectedCourseId(e.target.value ? Number(e.target.value) : '')}
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800"
+                                    >
+                                        <option value="">No Course (General License Seat)</option>
+                                        {courses.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting || !selectedUserId || company.used_seats >= company.max_seats}
+                                    className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-xs transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                    <Users className="w-4 h-4" />
+                                    <span>{isSubmitting ? 'Adding...' : 'Add User to Organization'}</span>
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleInvite} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={inviteName}
+                                        onChange={(e) => setInviteName(e.target.value)}
+                                        placeholder="Jane Doe"
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-800"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Company Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={inviteEmail}
+                                        onChange={(e) => setInviteEmail(e.target.value)}
+                                        placeholder="jane.doe@company.com"
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-slate-800"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                        Assign Initial Course
+                                    </label>
+                                    <select
+                                        value={selectedCourseId}
+                                        onChange={(e) => setSelectedCourseId(e.target.value ? Number(e.target.value) : '')}
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800"
+                                    >
+                                        <option value="">No Course (General Seat)</option>
+                                        {courses.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting || company.used_seats >= company.max_seats}
+                                    className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-xs transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                    <Mail className="w-4 h-4" />
+                                    <span>{isSubmitting ? 'Inviting...' : 'Send License Invitation'}</span>
+                                </button>
+                            </form>
+                        )}
                     </div>
                 </div>
 

@@ -16,11 +16,22 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'surname',
         'email',
+        'phone',
+        'date_of_birth',
+        'address_street',
+        'address_city',
+        'address_country',
+        'address_postcode',
+        'terms_accepted',
+        'terms_accepted_at',
         'password',
         'role',
         'company_id',
         'avatar_url',
+        'xp',
+        'streak_days',
     ];
 
     protected $hidden = [
@@ -32,6 +43,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'date_of_birth' => 'date',
+            'terms_accepted' => 'boolean',
+            'terms_accepted_at' => 'datetime',
+            'xp' => 'integer',
+            'streak_days' => 'integer',
             'password' => 'hashed',
         ];
     }

@@ -168,8 +168,82 @@ const MEGA_MENU_DATA: CategoryItem[] = [
         ],
     },
     {
+        id: 'languages-comm',
+        title: 'Languages & Communication',
+        subcategories: [
+            {
+                id: 'lang-business',
+                title: 'Business English & Fluency',
+                items: [
+                    'Business English for Global Careers & Executive Communication',
+                    'Executive Public Speaking, Pitching & Storytelling',
+                    'Cross-Cultural Negotiations & Remote Teamwork',
+                    'C1 Grammar & Professional Email Etiquette',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'design-creative',
+        title: 'Design & User Experience',
+        subcategories: [
+            {
+                id: 'design-core',
+                title: 'UI/UX & Design Systems',
+                items: [
+                    'Product Design Mastery: Figma, Design Systems & UX Research',
+                    'Interactive Prototyping & Micro-Interactions',
+                    'Design Tokens & Component Architecture',
+                    'User Research & Usability Testing',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'agile-mgmt',
+        title: 'Agile & Project Management',
+        subcategories: [
+            {
+                id: 'mgmt-scrum',
+                title: 'Scrum Master & Delivery',
+                items: [
+                    'Agile Project Management: Scrum Master & Delivery Leadership',
+                    'Sprint Planning, Retrospectives & Velocity',
+                    'Kanban & Lean Delivery for Fast Teams',
+                    'Executive Public Speaking, Pitching & Storytelling',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'finance-growth',
+        title: 'Finance & Growth Marketing',
+        subcategories: [
+            {
+                id: 'growth-mkt',
+                title: 'Growth & Acquisition',
+                items: [
+                    'Performance Marketing & Modern Growth Hacking Masterclass',
+                    'Paid Acquisition: Meta, Google Ads & LinkedIn',
+                    'Conversion Rate Optimization (CRO) & Funnels',
+                    'Product-Led Growth (PLG) Metrics',
+                ],
+            },
+            {
+                id: 'finance-val',
+                title: 'Corporate Finance & Valuation',
+                items: [
+                    'Corporate Finance, Valuation & Financial Modeling',
+                    'Discounted Cash Flow (DCF) Valuation',
+                    'SaaS Financial Modeling & Unit Economics',
+                    'European B2B Invoicing Standards (Peppol / UBL)',
+                ],
+            },
+        ],
+    },
+    {
         id: 'business-corporate',
-        title: 'B2B & Business Management',
+        title: 'B2B & Enterprise Strategy',
         subcategories: [
             {
                 id: 'biz-leadership',
@@ -305,7 +379,7 @@ export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
                             onClick={onClose}
                             className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
                         >
-                            Browse All 40+ Courses in Catalog →
+                            Browse All 63 Courses in Catalog →
                         </Link>
                         <button
                             onClick={onClose}

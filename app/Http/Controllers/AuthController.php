@@ -26,21 +26,32 @@ class AuthController extends Controller
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $loginInput = trim($credentials['email']);
+        $password = $credentials['password'];
+
+        // Allow logging in with either 'admin' username or standard email address
+        $user = null;
+        if (strtolower($loginInput) === 'admin') {
+            $user = User::where('role', 'admin')->first();
+        } else {
+            $user = User::where('email', $loginInput)->first();
+        }
+
+        if ($user && Hash::check($password, $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
-            $user = Auth::user();
             if ($user->isAdmin()) {
                 return redirect()->route('admin.generator');
-            } elseif ($user->isCorporate()) {
+            } elseif ($user->isCorporate() && $user->company_id) {
                 return redirect()->route('corporate.dashboard');
             }
 
-            return redirect()->route('courses.index');
+            return redirect()->route('student.dashboard');
         }
 
         return back()->withErrors([
@@ -50,13 +61,39 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        $excludedCountries = [
+            'sudan', 'dem. rep. of the congo', 'democratic republic of the congo', 'iran',
+            'mali', 'myanmar', 'myanmar (burma)', 'north korea', 'south sudan', 'syria',
+            'yemen', 'afghanistan', 'belarus', 'central african republic', 'cuba',
+            'haiti', 'iraq', 'russia', 'somalia', 'venezuela', 'zimbabwe',
+        ];
+
         $validated = $request->validate([
             'name' => 'required|string|max:100',
+            'surname' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
+            'phone' => 'required|string|max:30',
+            'date_of_birth' => 'required|date|before:today',
+            'address_street' => 'required|string|max:255',
+            'address_city' => 'required|string|max:100',
+            'address_country' => [
+                'required',
+                'string',
+                'max:100',
+                function ($attribute, $value, $fail) use ($excludedCountries) {
+                    if (in_array(strtolower(trim($value)), $excludedCountries, true)) {
+                        $fail('Registration is not supported from this country due to regulatory compliance.');
+                    }
+                },
+            ],
+            'address_postcode' => 'required|string|max:20',
+            'terms' => 'accepted',
             'role' => 'required|in:student,corporate',
             'company_name' => 'nullable|required_if:role,corporate|string|max:150',
             'vat_number' => 'nullable|string|max:50',
+        ], [
+            'terms.accepted' => 'You must agree to the Terms & Conditions and Privacy Policy to create an account.',
         ]);
 
         $companyId = null;
@@ -65,6 +102,8 @@ class AuthController extends Controller
                 'name' => $validated['company_name'] ?? 'Enterprise Team',
                 'vat_number' => $validated['vat_number'] ?? 'EU' . rand(100000000, 999999999),
                 'billing_email' => $validated['email'],
+                'billing_address' => $validated['address_street'] . ', ' . $validated['address_city'] . ', ' . $validated['address_postcode'] . ' ' . $validated['address_country'],
+                'country_code' => substr($validated['address_country'], 0, 2),
                 'max_seats' => 10,
                 'used_seats' => 1,
             ]);
@@ -73,10 +112,21 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $validated['name'],
+            'surname' => $validated['surname'],
             'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'date_of_birth' => $validated['date_of_birth'],
+            'address_street' => $validated['address_street'],
+            'address_city' => $validated['address_city'],
+            'address_country' => $validated['address_country'],
+            'address_postcode' => $validated['address_postcode'],
+            'terms_accepted' => true,
+            'terms_accepted_at' => now(),
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'company_id' => $companyId,
+            'xp' => 100, // Welcome bonus XP
+            'streak_days' => 1,
         ]);
 
         Auth::login($user);
@@ -85,32 +135,7 @@ class AuthController extends Controller
             return redirect()->route('corporate.dashboard');
         }
 
-        return redirect()->route('courses.index');
-    }
-
-    /**
-     * Quick Demo Switcher - seamlessly logs in as seeded role for easy evaluation
-     */
-    public function demoLogin(string $role): RedirectResponse
-    {
-        $email = match ($role) {
-            'admin' => 'admin@nexused.test',
-            'corporate' => 'corporate@nexused.test',
-            default => 'student@nexused.test',
-        };
-
-        $user = User::firstWhere('email', $email);
-        if ($user) {
-            Auth::login($user);
-        }
-
-        if ($role === 'admin') {
-            return redirect()->route('admin.generator');
-        } elseif ($role === 'corporate') {
-            return redirect()->route('corporate.dashboard');
-        }
-
-        return redirect()->route('courses.index');
+        return redirect()->route('student.dashboard');
     }
 
     public function logout(Request $request): RedirectResponse

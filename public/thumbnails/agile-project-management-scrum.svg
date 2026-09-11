@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090D16" />
+      <stop offset="50%" stop-color="#0E1626" />
+      <stop offset="100%" stop-color="#090D16" />
+    </linearGradient>
+
+    <!-- Ambient Glow Gradient -->
+    <radialGradient id="glowGrad" cx="30%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.22" />
+      <stop offset="60%" stop-color="#818CF8" stop-opacity="0.03" />
+      <stop offset="100%" stop-color="#818CF8" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Terminal Glow -->
+    <radialGradient id="terminalGlow" cx="80%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#818CF8" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Card Inner Shadow Filter -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="60" result="blur" />
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.75" stroke-opacity="0.6" />
+      <circle cx="40" cy="40" r="1.2" fill="#334155" fill-opacity="0.8" />
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="675" fill="url(#bgGrad)" />
+
+  <!-- Grid Overlay -->
+  <rect width="1200" height="675" fill="url(#grid)" />
+
+  <!-- Ambient Color Glows -->
+  <circle cx="250" cy="200" r="350" fill="url(#glowGrad)" />
+  <circle cx="950" cy="250" r="300" fill="url(#terminalGlow)" />
+
+  <!-- Decorative Circuit Mesh Lines -->
+  <g stroke="#1E293B" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.7">
+    <line x1="80" y1="80" x2="620" y2="80" />
+    <line x1="620" y1="80" x2="680" y2="140" />
+    <line x1="80" y1="580" x2="1120" y2="580" />
+  </g>
+
+  <!-- Left Content Column -->
+  <g transform="translate(80, 0)">
+    <!-- Top Pill Badge -->
+    <rect x="0" y="110" width="340" height="36" rx="18" fill="rgba(129, 140, 248, 0.15)" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5" />
+    <text x="18" y="133" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="12" font-weight="800" fill="#A5B4FC" letter-spacing="1.5">
+      📋  AGILE LEADERSHIP & SPRINT MATRIX
+    </text>
+
+    <!-- Main Course Title -->
+    <switch>
+      <g>
+        <text x="0" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" letter-spacing="-0.5">
+          <tspan x="0" dy="0">Agile Project Management: Scrum Master &amp; Delivery Leadership</tspan>
+        </text>
+      </g>
+    </switch>
+
+    <!-- Subtitle / Topic -->
+    <text x="0" y="340" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="18" font-weight="500" fill="#94A3B8" letter-spacing="0.2">
+      Comprehensive production curriculum with hands-on lab tests.
+    </text>
+
+    <!-- Metric Badges -->
+    <g transform="translate(0, 420)">
+      <!-- Badge 1: Modules -->
+      <rect x="0" y="0" width="130" height="42" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">
+        📚  1 Modules
+      </text>
+
+      <!-- Badge 2: Hours -->
+      <rect x="145" y="0" width="130" height="42" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+      <text x="161" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">
+        ⏱️  8h Length
+      </text>
+
+      <!-- Badge 3: Certification -->
+      <rect x="290" y="0" width="180" height="42" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+      <text x="306" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="700" fill="#10B981">
+        ✓  Verified Certificate
+      </text>
+    </g>
+
+    <!-- Brand Seal / Watermark -->
+    <g transform="translate(0, 530)">
+      <text x="0" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="800" fill="#64748B" letter-spacing="1.2">
+        NEXUSED <tspan fill="#818CF8">•</tspan> ACADEMY ARCHITECTS
+      </text>
+    </g>
+  </g>
+
+  <!-- Right Column: macOS Code & Architecture Terminal Window -->
+  <g transform="translate(670, 70)">
+    <!-- Terminal Outer Shadow Card -->
+    <rect x="0" y="0" width="450" height="480" rx="16" fill="#0A0E1A" stroke="#1E293B" stroke-width="1.5" />
+
+    <!-- Terminal Header -->
+    <rect x="0" y="0" width="450" height="40" rx="16" fill="#0F172A" />
+    <rect x="0" y="24" width="450" height="16" fill="#0F172A" />
+    <line x1="0" y1="40" x2="450" y2="40" stroke="#1E293B" stroke-width="1" />
+
+    <!-- Window Dots -->
+    <circle cx="20" cy="20" r="5" fill="#EF4444" />
+    <circle cx="36" cy="20" r="5" fill="#F59E0B" />
+    <circle cx="52" cy="20" r="5" fill="#10B981" />
+
+    <!-- File Tab Name -->
+    <rect x="80" y="10" width="160" height="22" rx="6" fill="#1E293B" />
+    <text x="96" y="25" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="10" font-weight="700" fill="#94A3B8">
+      main.agile-sprint
+    </text>
+
+    <!-- Active status indicator -->
+    <circle cx="420" cy="20" r="4" fill="#818CF8" />
+
+    <!-- Syntax Highlighted Code -->
+    <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12.5" font-weight="500">
+      <tspan x="720" y="120" fill="#475569">01  </tspan><tspan fill="#38BDF8">Sprint: "Q3 Delivery Cycle #14"</tspan>
+<tspan x="720" y="144" fill="#475569">02  </tspan><tspan fill="#E2E8F0">Velocity: 48 Story Points</tspan>
+<tspan x="720" y="168" fill="#475569">03  </tspan><tspan fill="#E2E8F0">Cycle Time: 2.4 days / feature</tspan>
+<tspan x="720" y="192" fill="#475569">04  </tspan><tspan fill="#E2E8F0"></tspan>
+<tspan x="720" y="216" fill="#475569">05  </tspan><tspan fill="#E2E8F0">Standup Blockers: 0</tspan>
+<tspan x="720" y="240" fill="#475569">06  </tspan><tspan fill="#E2E8F0">Definition of Done: Verified in Staging</tspan>
+<tspan x="720" y="264" fill="#475569">07  </tspan><tspan fill="#E2E8F0">Release Confidence: 99.4%</tspan>
+
+    </text>
+
+    <!-- Bottom Status Bar -->
+    <rect x="0" y="445" width="450" height="35" rx="16" fill="#080C14" />
+    <rect x="0" y="445" width="450" height="15" fill="#080C14" />
+    <line x1="0" y1="445" x2="450" y2="445" stroke="#1E293B" stroke-width="1" />
+    <text x="18" y="467" font-family="ui-monospace, monospace" font-size="10.5" font-weight="600" fill="#64748B">
+      UTF-8  <tspan fill="#818CF8">●</tspan>  AGILE LEADERSHIP & SPRINT MATRIX  <tspan fill="#475569">| Ln 12, Col 1</tspan>
+    </text>
+  </g>
+</svg>

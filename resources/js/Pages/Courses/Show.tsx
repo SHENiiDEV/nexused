@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Course } from '../../types';
 import { AppLayout } from '../../Layouts/AppLayout';
 import { CheckoutModal } from '../../Components/CheckoutModal';
+import { CourseCover } from '../../Components/CourseCover';
 import {
     BookOpen,
     Building2,
@@ -157,7 +158,9 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
 
                     {/* Right 1 Col: Sticky Purchase Card */}
                     <div className="lg:sticky lg:top-24 space-y-6">
-                        <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl space-y-6">
+                        <div className="rounded-2xl bg-white border border-slate-200 shadow-xl overflow-hidden space-y-6">
+                            <CourseCover course={course} aspectRatio="video" />
+                            <div className="p-6 sm:p-8 pt-0 space-y-6">
                             <div className="border-b border-slate-100 pb-5">
                                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
                                     Lifetime Access
@@ -226,6 +229,7 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
                                     <span>Automated Peppol UBL 2.1 e-invoicing for B2B</span>
                                 </li>
                             </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

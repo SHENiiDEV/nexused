@@ -50,6 +50,12 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'appName' => config('app.name', 'NexusEd'),
+            'company' => [
+                'name' => config('company.name', 'NexusEd Global GmbH'),
+                'number' => config('company.number', 'HRB 248910 B'),
+                'address' => config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'),
+                'email' => config('company.email', 'legal@nexused.com'),
+            ],
         ];
     }
 }

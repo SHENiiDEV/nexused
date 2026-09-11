@@ -88,6 +88,10 @@ class B2BInvoiceService
         $customerAddr = htmlspecialchars($invoice->customer_address ?? 'Europe', ENT_XML1);
         $countryCode = $company->country_code ?? 'DE';
 
+        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'), ENT_XML1);
+        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'), ENT_XML1);
+        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'), ENT_XML1);
+
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -110,10 +114,10 @@ class B2BInvoiceService
                 <cbc:ID>DE309482104</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
-                <cbc:Name>NexusEd Global GmbH</cbc:Name>
+                <cbc:Name>{$companyName}</cbc:Name>
             </cac:PartyName>
             <cac:PostalAddress>
-                <cbc:StreetName>Friedrichstraße 180</cbc:StreetName>
+                <cbc:StreetName>Friedrichstraße 200</cbc:StreetName>
                 <cbc:CityName>Berlin</cbc:CityName>
                 <cbc:PostalZone>10117</cbc:PostalZone>
                 <cac:Country>
@@ -127,8 +131,8 @@ class B2BInvoiceService
                 </cac:TaxScheme>
             </cac:PartyTaxScheme>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName>NexusEd Global GmbH</cbc:RegistrationName>
-                <cbc:CompanyID>HRB 94820 B</cbc:CompanyID>
+                <cbc:RegistrationName>{$companyName}</cbc:RegistrationName>
+                <cbc:CompanyID>{$companyNumber}</cbc:CompanyID>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:AccountingSupplierParty>
@@ -233,6 +237,11 @@ XML;
         $totalFmt = number_format((float)$invoice->amount, 2, '.', ',');
         $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
 
+        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
+        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'));
+        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
+        $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
+
         return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -286,12 +295,13 @@ XML;
 
         <div class="parties">
             <div class="party">
-                <div class="party-title">Supplier</div>
-                <div class="party-name">NexusEd Global GmbH</div>
+                <div class="party-title">Supplier / Issuer</div>
+                <div class="party-name">{$companyName}</div>
                 <div class="party-desc">
-                    Friedrichstraße 180<br>
-                    10117 Berlin, Germany<br>
-                    <strong>VAT:</strong> DE309482104<br>
+                    {$companyAddress}<br>
+                    <strong>Commercial Register:</strong> {$companyNumber}<br>
+                    <strong>Contact:</strong> {$companyEmail}<br>
+                    <strong>VAT / Tax ID:</strong> DE309482104<br>
                     <strong>E-Invoicing Endpoint:</strong> 9482019482012
                 </div>
             </div>
@@ -345,7 +355,7 @@ XML;
         </div>
 
         <div class="footer">
-            <p>NexusEd Global GmbH • Commercial Register HRB 94820 B • Managing Director: Mihails Segins</p>
+            <p>{$companyName} • Commercial Register {$companyNumber} • Official Contact: {$companyEmail}</p>
             <p>This invoice is electronically certified and fully conforms to Peppol BIS Billing 3.0 / EU Directive 2014/55/EU.</p>
         </div>
     </div>

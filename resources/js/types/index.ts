@@ -1,10 +1,13 @@
 export interface User {
     id: number;
     name: string;
+    surname?: string | null;
     email: string;
     role: 'student' | 'corporate' | 'admin';
     company_id?: number | null;
     avatar_url?: string | null;
+    xp?: number;
+    streak_days?: number;
     company?: Company;
 }
 
@@ -138,6 +141,13 @@ export interface AuditLog {
     user?: User;
 }
 
+export interface CompanyLegalInfo {
+    name: string;
+    number: string;
+    address: string;
+    email: string;
+}
+
 export interface PageProps {
     auth: {
         user: User | null;
@@ -147,5 +157,6 @@ export interface PageProps {
         error?: string | null;
     };
     appName: string;
+    company?: CompanyLegalInfo;
     [key: string]: unknown;
 }

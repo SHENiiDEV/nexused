@@ -27,12 +27,11 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title }: AppLayoutProps) {
-    const { auth, flash } = usePage<PageProps>().props;
+    const { auth, flash, company } = usePage<PageProps>().props;
     const user: User | null = auth.user;
 
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [demoMenuOpen, setDemoMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleGlobalSearch = (e: React.FormEvent) => {
@@ -42,6 +41,15 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         }
     };
 
+    const userInitials = user?.name
+        ? user.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
+        : 'U';
+
     return (
         <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans antialiased">
             {/* Top Navigation Bar (Udemy Style Clean White) */}
@@ -50,9 +58,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                     {/* Left: Brand + Explore Mega Menu Trigger */}
                     <div className="flex items-center gap-4 sm:gap-6 shrink-0">
                         <Link href="/courses" className="flex items-center gap-2 group">
-                            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white font-black text-lg shadow-xs group-hover:bg-emerald-600 transition-colors">
-                                N
-                            </div>
+                            <img
+                                src="/favicon.svg"
+                                alt="NexusEd"
+                                className="w-9 h-9 rounded-lg shadow-xs group-hover:scale-105 transition-transform"
+                            />
                             <span className="text-xl font-extrabold tracking-tight text-slate-950">
                                 Nexus<span className="text-emerald-600">Ed</span>
                             </span>
@@ -62,7 +72,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         <button
                             type="button"
                             onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 hover:bg-slate-100/80 rounded-lg transition-colors"
+                            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 hover:bg-slate-100/80 rounded-lg transition-colors cursor-pointer"
                         >
                             <Compass className="w-4 h-4 text-slate-500" />
                             <span>Explore</span>
@@ -85,113 +95,108 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         />
                     </form>
 
-                    {/* Right: Quick Links, Role Switcher, Auth */}
+                    {/* Right: Quick Links, Dynamic User Bar, Auth */}
                     <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-                        {/* NexusEd Business / Corporate link */}
-                        <Link
-                            href="/corporate/dashboard"
-                            className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-emerald-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
-                        >
-                            <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                            <span>NexusEd Business</span>
-                        </Link>
-
-                        {/* AI Studio Link for Creators/Admins */}
-                        <Link
-                            href="/admin/generator"
-                            className="hidden xl:flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-emerald-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
-                        >
-                            <Cpu className="w-3.5 h-3.5 text-slate-500" />
-                            <span>AI Studio</span>
-                        </Link>
-
-                        {/* Fast 1-Click Demo Role Switcher Pill */}
-                        <div className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setDemoMenuOpen(!demoMenuOpen)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-950 transition-colors shadow-2xs"
-                            >
-                                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                <span className="hidden sm:inline">Role:</span>
-                                <span className="font-semibold text-slate-900 capitalize">
-                                    {user?.role || 'Guest'}
-                                </span>
-                                <ChevronDown className="w-3 h-3 text-slate-500" />
-                            </button>
-
-                            {demoMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white border border-slate-200 shadow-xl p-2 z-50 animate-in fade-in">
-                                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                        1-Click Demo Logins
-                                    </div>
-                                    <Link
-                                        href="/demo-login/student"
-                                        onClick={() => setDemoMenuOpen(false)}
-                                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-slate-800 hover:bg-slate-50 transition-colors"
-                                    >
-                                        <GraduationCap className="w-4 h-4 text-emerald-600" />
-                                        <div>
-                                            <div className="font-semibold">Student (B2C)</div>
-                                            <div className="text-[10px] text-slate-500">Course player & quizzes</div>
-                                        </div>
-                                    </Link>
-                                    <Link
-                                        href="/demo-login/corporate"
-                                        onClick={() => setDemoMenuOpen(false)}
-                                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-slate-800 hover:bg-slate-50 transition-colors"
-                                    >
-                                        <Building2 className="w-4 h-4 text-teal-600" />
-                                        <div>
-                                            <div className="font-semibold">Corporate (B2B)</div>
-                                            <div className="text-[10px] text-slate-500">Acme Corp & Peppol Invoices</div>
-                                        </div>
-                                    </Link>
-                                    <Link
-                                        href="/demo-login/admin"
-                                        onClick={() => setDemoMenuOpen(false)}
-                                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-slate-800 hover:bg-slate-50 transition-colors"
-                                    >
-                                        <Shield className="w-4 h-4 text-amber-600" />
-                                        <div>
-                                            <div className="font-semibold">Admin / Creator</div>
-                                            <div className="text-[10px] text-slate-500">AI studio & HMAC ledger</div>
-                                        </div>
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* User Account / Auth buttons */}
                         {user ? (
-                            <div className="flex items-center gap-3">
-                                <div className="hidden sm:block text-right">
-                                    <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                                    <div className="text-[10px] font-mono text-slate-500 capitalize">{user.role}</div>
-                                </div>
+                            <>
+                                {/* Student Dashboard Link */}
                                 <Link
-                                    href="/logout"
-                                    method="post"
-                                    as="button"
-                                    className="p-2 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-slate-100 transition-colors"
-                                    title="Sign Out"
+                                    href="/dashboard"
+                                    className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-700 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors"
                                 >
-                                    <LogOut className="w-4 h-4" />
+                                    <GraduationCap className="w-4 h-4 text-emerald-600" />
+                                    <span>My Learning</span>
                                 </Link>
-                            </div>
+
+                                {/* Corporate Portal Link (Only if user has company or corporate role) */}
+                                {user.company_id && (
+                                    <Link
+                                        href="/corporate/dashboard"
+                                        className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-700 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+                                    >
+                                        <Building2 className="w-4 h-4 text-sky-600" />
+                                        <span>Corporate</span>
+                                    </Link>
+                                )}
+
+                                {/* Admin / AI Studio & Ledger */}
+                                {user.role === 'admin' && (
+                                    <div className="hidden xl:flex items-center gap-1">
+                                        <Link
+                                            href="/admin/generator"
+                                            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-700 px-2.5 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+                                            title="AI Course Studio"
+                                        >
+                                            <Cpu className="w-4 h-4 text-amber-600" />
+                                            <span>AI Studio</span>
+                                        </Link>
+                                        <Link
+                                            href="/admin/transactions"
+                                            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-emerald-700 px-2.5 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+                                            title="Transaction Ledger"
+                                        >
+                                            <Shield className="w-4 h-4 text-slate-600" />
+                                            <span>Ledger</span>
+                                        </Link>
+                                    </div>
+                                )}
+
+                                {/* User Profile Badge */}
+                                <div className="flex items-center gap-2.5 pl-2 sm:pl-3 sm:border-l border-slate-200">
+                                    <Link
+                                        href="/dashboard"
+                                        className="flex items-center gap-2 group cursor-pointer"
+                                        title="Go to Dashboard"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
+                                            {userInitials}
+                                        </div>
+                                        <div className="hidden md:block text-left leading-tight">
+                                            <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                                {user.name}
+                                            </div>
+                                            <div className="text-[10px] text-slate-500 font-mono capitalize">
+                                                {user.role}
+                                            </div>
+                                        </div>
+                                    </Link>
+
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                                        title="Sign Out"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </>
                         ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2.5">
+                                <Link
+                                    href="/about"
+                                    className="hidden lg:flex text-xs font-semibold text-slate-600 hover:text-slate-900 px-2 py-1.5"
+                                >
+                                    About Us
+                                </Link>
+                                <Link
+                                    href="/courses"
+                                    className="hidden lg:flex text-xs font-semibold text-slate-600 hover:text-slate-900 px-2 py-1.5"
+                                >
+                                    Browse Courses
+                                </Link>
                                 <Link
                                     href="/login"
-                                    className="px-3.5 py-2 text-xs font-bold rounded-lg border border-slate-900 text-slate-900 hover:bg-slate-100 transition-colors"
+                                    className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
                                 >
-                                    Log in
+                                    Log In
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-3.5 py-2 text-xs font-bold rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition-colors"
+                                    className="px-4 py-2 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
                                 >
-                                    Sign up
+                                    Sign Up
                                 </Link>
                             </div>
                         )}
@@ -200,7 +205,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-950 hover:bg-slate-100"
+                            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-950 hover:bg-slate-100 cursor-pointer"
                         >
                             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
@@ -220,16 +225,6 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900"
                             />
                         </form>
-                        <button
-                            onClick={() => {
-                                setMobileMenuOpen(false);
-                                setMegaMenuOpen(true);
-                            }}
-                            className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50 flex items-center justify-between"
-                        >
-                            <span>Explore Categories</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
-                        </button>
                         <Link
                             href="/courses"
                             className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
@@ -238,26 +233,76 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                             All Courses
                         </Link>
                         <Link
-                            href="/corporate/dashboard"
+                            href="/about"
                             className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
                             onClick={() => setMobileMenuOpen(false)}
                         >
-                            NexusEd Business (Corporate)
+                            About Us
                         </Link>
-                        <Link
-                            href="/admin/generator"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            AI Course Studio
-                        </Link>
-                        <Link
-                            href="/admin/transactions"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Financial Transactions & Webhooks
-                        </Link>
+                        {user ? (
+                            <>
+                                <Link
+                                    href="/dashboard"
+                                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-slate-50"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    My Learning &amp; Dashboard
+                                </Link>
+                                {user.company_id && (
+                                    <Link
+                                        href="/corporate/dashboard"
+                                        className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Corporate Portal
+                                    </Link>
+                                )}
+                                {user.role === 'admin' && (
+                                    <>
+                                        <Link
+                                            href="/admin/generator"
+                                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            AI Course Studio
+                                        </Link>
+                                        <Link
+                                            href="/admin/transactions"
+                                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Transaction Ledger
+                                        </Link>
+                                    </>
+                                )}
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Sign Out
+                                </Link>
+                            </>
+                        ) : (
+                            <div className="pt-2 border-t border-slate-100 flex gap-2">
+                                <Link
+                                    href="/login"
+                                    className="flex-1 text-center py-2 rounded-lg border border-slate-300 text-xs font-bold text-slate-900"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Log In
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="flex-1 text-center py-2 rounded-lg bg-slate-900 text-xs font-bold text-white"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Sign Up
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 )}
             </header>
@@ -281,80 +326,97 @@ export function AppLayout({ children, title }: AppLayoutProps) {
             {/* Main Content Body */}
             <main className="flex-1 w-full bg-slate-50/40">{children}</main>
 
-            {/* Deep Clean Footer (Udemy Style) */}
+            {/* Clean Enterprise Footer */}
             <footer className="mt-auto border-t border-slate-200 bg-slate-900 text-slate-300 py-12 text-xs">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                     {/* Top row: Brand & Business prompt */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-8 border-b border-slate-800 gap-4">
-                        <div>
-                            <span className="text-xl font-bold text-white tracking-tight">
-                                Nexus<span className="text-emerald-400">Ed</span> Business
-                            </span>
-                            <p className="text-xs text-slate-400 mt-1">
-                                Upskill teams with AI-curated curriculum, performance metrics, and Peppol UBL 2.1 invoicing.
-                            </p>
+                        <div className="flex items-start gap-3">
+                            <img src="/favicon.svg" alt="NexusEd" className="w-10 h-10 rounded-lg shrink-0 mt-0.5" />
+                            <div>
+                                <span className="text-xl font-bold text-white tracking-tight">
+                                    Nexus<span className="text-emerald-400">Ed</span> Global
+                                </span>
+                                <p className="text-xs text-slate-400 mt-1 max-w-xl leading-relaxed">
+                                    Operated by <strong className="text-slate-200">{company?.name || 'NexusEd Global GmbH'}</strong> (Reg. No: {company?.number || 'HRB 248910 B'}). Professional education platform with verified certificates and enterprise compliance.
+                                </p>
+                            </div>
                         </div>
                         <Link
                             href="/corporate/dashboard"
-                            className="px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors"
+                            className="px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors cursor-pointer"
                         >
-                            Get NexusEd Business
+                            Enterprise &amp; Teams
                         </Link>
                     </div>
 
                     {/* Columns */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs">
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">NexusEd Overview</div>
-                            <div><Link href="/courses" className="hover:text-white">Explore Courses</Link></div>
-                            <div><Link href="/admin/generator" className="hover:text-white">AI Course Studio</Link></div>
-                            <div><Link href="/courses?search=Distributed" className="hover:text-white">Distributed Systems</Link></div>
-                            <div><Link href="/courses?search=AI" className="hover:text-white">Generative AI Tracks</Link></div>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Learning Tracks</div>
+                            <div><Link href="/courses" className="hover:text-white transition-colors">All Masterclasses</Link></div>
+                            <div><Link href="/courses?search=English" className="hover:text-white transition-colors">Languages &amp; Communication</Link></div>
+                            <div><Link href="/courses?search=Design" className="hover:text-white transition-colors">Product Design &amp; UX</Link></div>
+                            <div><Link href="/courses?search=Distributed" className="hover:text-white transition-colors">Distributed Systems &amp; Go</Link></div>
+                            <div><Link href="/courses?search=AI" className="hover:text-white transition-colors">Autonomous AI &amp; Agents</Link></div>
                         </div>
 
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">B2B & Enterprise</div>
-                            <div><Link href="/corporate/dashboard" className="hover:text-white">Corporate Portal</Link></div>
-                            <div><span className="text-slate-400">Team Licensing (up to €2000)</span></div>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Company &amp; Enterprise</div>
+                            <div><Link href="/about" className="hover:text-white transition-colors text-emerald-400 font-semibold">About NexusEd Global</Link></div>
+                            <div><Link href="/corporate/dashboard" className="hover:text-white transition-colors">Corporate Portal</Link></div>
+                            <div><span className="text-slate-400">Team Licensing &amp; Seats</span></div>
                             <div><span className="text-slate-400">Peppol BIS 3.0 / UBL 2.1</span></div>
-                            <div><span className="text-slate-400">Employee Analytics Matrix</span></div>
+                            <div><span className="text-slate-400">Skill Matrix &amp; Analytics</span></div>
                         </div>
 
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Billing & Security</div>
-                            <div><Link href="/admin/transactions" className="hover:text-white">HMAC Webhook Ledger</Link></div>
-                            <div><span className="text-slate-400">Corefy Multi-Currency</span></div>
-                            <div><span className="text-slate-400">Cardaq Acquiring</span></div>
-                            <div><span className="text-slate-400">Apple Pay Integration</span></div>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Trust &amp; Security</div>
+                            <div><span className="text-slate-400">256-Bit Bank-Grade Encryption</span></div>
+                            <div><span className="text-slate-400">PCI-DSS Level 1 Compliant</span></div>
+                            <div><span className="text-slate-400">Verified Diplomas &amp; Badges</span></div>
+                            <div><span className="text-slate-400">99.9% Platform SLA</span></div>
                         </div>
 
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Legal & Standards</div>
-                            <div><span className="text-slate-400">EU Invoicing Directive 2014/55/EU</span></div>
-                            <div><span className="text-slate-400">Terms of Service</span></div>
-                            <div><span className="text-slate-400">Privacy Policy (GDPR)</span></div>
-                            <div className="pt-2">
-                                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-slate-700 text-slate-300 hover:text-white text-xs">
-                                    <Globe className="w-3.5 h-3.5" />
-                                    <span>English (EU)</span>
-                                </button>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Legal &amp; Compliance</div>
+                            <div><Link href="/about" className="hover:text-white transition-colors">Entity &amp; Governance</Link></div>
+                            <div><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></div>
+                            <div><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy (GDPR)</Link></div>
+                            <div>
+                                <a
+                                    href={`mailto:${company?.email || 'legal@nexused.com'}`}
+                                    className="hover:text-white transition-colors text-slate-300 underline"
+                                >
+                                    {company?.email || 'legal@nexused.com'}
+                                </a>
+                            </div>
+                            <div className="text-[11px] text-slate-400 pt-1 font-mono">
+                                Reg. {company?.number || 'HRB 248910 B'}
                             </div>
                         </div>
                     </div>
 
                     {/* Bottom Row */}
-                    <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center font-bold text-xs">N</div>
-                            <span>© {new Date().getFullYear()} NexusEd Global GmbH. All rights reserved.</span>
+                    <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[11px] text-slate-400">
+                        <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2 text-slate-300">
+                                <img src="/favicon.svg" alt="NexusEd" className="w-5 h-5 rounded" />
+                                <span className="font-semibold text-white">{company?.name || 'NexusEd Global GmbH'}</span>
+                                <span>•</span>
+                                <span>Reg. No: <span className="font-mono text-slate-200">{company?.number || 'HRB 248910 B'}</span></span>
+                            </div>
+                            <div className="text-slate-500">
+                                Registered Office: {company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany'}
+                            </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 shrink-0">
                             <span className="inline-flex items-center gap-1 text-emerald-400">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                Reverb WebSockets Ready
+                                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                ISO/IEC 27001 Infrastructure
                             </span>
                             <span>•</span>
-                            <span>Standard European E-Invoicing</span>
+                            <span>© {new Date().getFullYear()} All rights reserved.</span>
                         </div>
                     </div>
                 </div>

@@ -18,8 +18,10 @@ class PaymentGatewayManager
 
     public function __construct()
     {
+        $cardaq = new CardaqGateway();
+        $this->register('credit_card', $cardaq);
+        $this->register('cardaq', $cardaq);
         $this->register('corefy', new CorefyGateway());
-        $this->register('cardaq', new CardaqGateway());
         $this->register('apple_pay', new ApplePayGateway());
         $this->register('mock', new MockGateway());
     }
@@ -32,7 +34,12 @@ class PaymentGatewayManager
 
     public function driver(?string $name = null): PaymentGatewayInterface
     {
-        $name = strtolower($name ?? 'mock');
+        $name = strtolower($name ?? 'credit_card');
+
+        if ($name === 'credit_card') {
+            // Default to Cardaq or Mock
+            return $this->drivers['credit_card'] ?? $this->drivers['mock'];
+        }
 
         if (!isset($this->drivers[$name])) {
             throw new InvalidArgumentException("Unsupported payment gateway driver: [{$name}]");
@@ -42,34 +49,16 @@ class PaymentGatewayManager
     }
 
     /**
-     * Get list of available active gateways
+     * Get list of available active gateways - strictly Credit Card for checkout
      */
     public function getAvailableGateways(): array
     {
         return [
             [
-                'id' => 'corefy',
-                'name' => 'Corefy Payment Hub',
-                'description' => 'Multi-currency processing with SEPA, Visa, Mastercard, and localized banking.',
-                'badge' => 'Enterprise Ready',
-            ],
-            [
-                'id' => 'cardaq',
-                'name' => 'Cardaq Acquiring',
-                'description' => 'Direct European acquiring with 3D-Secure 2.2 and instant tokenization.',
-                'badge' => 'High Approval',
-            ],
-            [
-                'id' => 'apple_pay',
-                'name' => 'Apple Pay',
-                'description' => 'Frictionless one-touch biometric checkout for Safari and iOS devices.',
-                'badge' => '1-Click Pay',
-            ],
-            [
-                'id' => 'mock',
-                'name' => 'Sandbox Instant Test',
-                'description' => 'Simulate instant authorization, webhook delivery, and HMAC verification.',
-                'badge' => 'Test Mode',
+                'id' => 'credit_card',
+                'name' => 'Credit Card',
+                'description' => 'Secure Visa, Mastercard & American Express processing with 3D-Secure 2.2.',
+                'badge' => 'Instant & Secure',
             ],
         ];
     }

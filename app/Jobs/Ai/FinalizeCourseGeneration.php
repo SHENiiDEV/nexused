@@ -23,6 +23,8 @@ class FinalizeCourseGeneration implements ShouldQueue
     {
         $course = Course::findOrFail($this->courseId);
 
+        \App\Services\Ai\CourseThumbnailGenerator::generate($course);
+
         $course->update([
             'status' => 'published',
             'generation_step' => 'Course Generation Completed Successfully',
