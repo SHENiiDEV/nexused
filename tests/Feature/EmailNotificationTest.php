@@ -152,5 +152,15 @@ class EmailNotificationTest extends TestCase
         $attachments = $mailable->attachments();
         $this->assertCount(1, $attachments);
         $this->assertNotNull($mailable->invoice);
+
+        // Verify that a fresh queued mailable can be safely queued and serialized into JSON payload
+        $freshMailable = new CoursePurchasedEmail($transaction, $user, $course);
+        $queuedJob = new \Illuminate\Mail\SendQueuedMailable($freshMailable);
+        $payload = json_encode([
+            'job' => 'Illuminate\Queue\CallQueuedHandler@call',
+            'data' => ['command' => serialize(clone $queuedJob)],
+        ]);
+        $this->assertNotFalse($payload, 'JSON error: ' . json_last_error_msg());
+        $this->assertEquals(JSON_ERROR_NONE, json_last_error());
     }
 }

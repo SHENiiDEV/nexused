@@ -21,7 +21,6 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public ?Invoice $invoice = null;
-    public ?string $invoicePdf = null;
 
     public function __construct(
         public Transaction $transaction,
@@ -35,13 +34,6 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
 
         $invoiceService = app(B2BInvoiceService::class);
         $this->invoice = $invoice ?? $this->transaction->invoice ?? $invoiceService->getOrCreateInvoice($this->transaction);
-        if ($this->invoice) {
-            try {
-                $this->invoicePdf = $invoiceService->generatePdfInvoice($this->invoice);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("[Invoice PDF] Failed to generate PDF invoice: " . $e->getMessage());
-            }
-        }
     }
 
     public function envelope(): Envelope
@@ -76,10 +68,15 @@ class CoursePurchasedEmail extends Mailable implements ShouldQueue
     {
         $attachments = [];
 
-        if ($this->invoice && $this->invoicePdf) {
-            $filename = "Invoice-{$this->invoice->invoice_number}.pdf";
+        if ($this->invoice) {
+            $invoice = $this->invoice;
+            $filename = "Invoice-{$invoice->invoice_number}.pdf";
+
             $attachments[] = Attachment::fromData(
-                fn () => $this->invoicePdf,
+                function () use ($invoice) {
+                    $invoiceService = app(B2BInvoiceService::class);
+                    return $invoiceService->generatePdfInvoice($invoice);
+                },
                 $filename
             )->withMime('application/pdf');
         }
