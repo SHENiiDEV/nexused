@@ -98,29 +98,6 @@ const TRUSTED_LOGOS = [
     { name: 'Ericsson', label: 'ERICSSON' },
 ];
 
-const TESTIMONIALS = [
-    {
-        quote: 'NexusEd cut our team onboarding time by 60%. The interactive quizzes and deep architectural code snippets give our developers practical confidence without fluff.',
-        author: 'Elena Rostova',
-        role: 'VP of Engineering, Acme Tech Group',
-    },
-    {
-        quote: 'The course player is fast, distraction-free, and the Markdown code examples are immediately usable in our production Go microservices.',
-        author: 'Markus Weber',
-        role: 'Lead Cloud Infrastructure Architect',
-    },
-    {
-        quote: 'Having automated Peppol BIS 3.0 UBL 2.1 electronic invoices directly generated for our EU tax department made corporate approval seamless.',
-        author: 'Sophie Laurent',
-        role: 'Director of Talent Development',
-    },
-    {
-        quote: 'The AI Course Synthesizer generated an entire 3-module curriculum on Raft consensus in minutes. It completely transformed our internal tech documentation.',
-        author: 'David K.',
-        role: 'Senior Staff Engineer',
-    },
-];
-
 export default function Index({ courses, filters, enrolledCourseIds }: IndexProps) {
     const [search, setSearch] = useState(filters.search || '');
     const [activeTab, setActiveTab] = useState<string>('all');
@@ -531,23 +508,12 @@ export default function Index({ courses, filters, enrolledCourseIds }: IndexProp
                                                     NexusEd Academy Architects
                                                 </p>
 
-                                                {/* Ratings and reviews (Udemy pattern) */}
-                                                <div className="flex items-center gap-1.5 mt-2">
-                                                    <span className="font-bold text-xs text-amber-700 font-mono">4.9</span>
-                                                    <div className="flex items-center text-amber-500">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <Star key={i} className="w-3 h-3 fill-current" />
-                                                        ))}
-                                                    </div>
-                                                    <span className="text-[11px] text-slate-600 font-mono">
-                                                        ({1240 + course.id * 142})
-                                                    </span>
-                                                </div>
-
-                                                <div className="flex items-center gap-3 text-xs text-slate-600 mt-2">
+                                                <div className="flex items-center gap-3 text-xs text-slate-600 mt-3 pt-2 border-t border-slate-100/80">
                                                     <span>{course.estimated_hours || 6} total hours</span>
                                                     <span>•</span>
                                                     <span>{course.modules_count ?? 3} modules</span>
+                                                    <span>•</span>
+                                                    <span className="text-emerald-700 font-medium">Verified Certificate</span>
                                                 </div>
                                             </div>
 
@@ -697,32 +663,6 @@ export default function Index({ courses, filters, enrolledCourseIds }: IndexProp
                             </span>
                         ))}
                     </div>
-                </div>
-            </div>
-
-            {/* 6. Testimonials Section (Matching Screenshot 1) */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="mb-8">
-                    <h2 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
-                        How learners like you are achieving their goals
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                        Verified student reviews and engineering leadership feedback.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {TESTIMONIALS.map((t, idx) => (
-                        <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between space-y-4 shadow-xs">
-                            <p className="text-xs text-slate-700 leading-relaxed italic">
-                                &ldquo;{t.quote}&rdquo;
-                            </p>
-                            <div className="pt-3 border-t border-slate-100">
-                                <div className="text-xs font-bold text-slate-900">{t.author}</div>
-                                <div className="text-[11px] text-slate-500">{t.role}</div>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </div>
 

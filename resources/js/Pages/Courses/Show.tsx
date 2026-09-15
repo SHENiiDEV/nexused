@@ -62,19 +62,11 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
                         </p>
 
                         <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300 pt-1">
-                            <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-amber-400 font-mono">4.9</span>
-                                <div className="flex text-amber-400">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} className="w-3 h-3 fill-current" />
-                                    ))}
-                                </div>
-                                <span className="text-slate-400 font-mono">(1,840 ratings)</span>
-                            </div>
+                            <span className="font-semibold text-emerald-400">Accredited Professional Curriculum</span>
                             <span>•</span>
                             <span>Created by NexusEd Principal Architects</span>
                             <span>•</span>
-                            <span className="text-emerald-400 font-medium">English [Auto]</span>
+                            <span className="text-slate-300">English [Auto]</span>
                         </div>
                     </div>
                 </div>

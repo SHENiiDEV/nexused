@@ -229,40 +229,18 @@ export function HeroSection({ totalCourses, onSelectCategory }: HeroSectionProps
                             </button>
                         </div>
 
-                        {/* Social Proof & Trust Badges */}
+                        {/* Trust Badges */}
                         <div className="pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-6 text-xs text-slate-400">
-                            {/* Avatar Stack */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                    <div className="inline-block h-7 w-7 rounded-full ring-2 ring-slate-900 bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px]">
-                                        AK
-                                    </div>
-                                    <div className="inline-block h-7 w-7 rounded-full ring-2 ring-slate-900 bg-sky-700 text-white font-bold flex items-center justify-center text-[10px]">
-                                        MR
-                                    </div>
-                                    <div className="inline-block h-7 w-7 rounded-full ring-2 ring-slate-900 bg-indigo-700 text-white font-bold flex items-center justify-center text-[10px]">
-                                        SL
-                                    </div>
-                                    <div className="inline-block h-7 w-7 rounded-full ring-2 ring-slate-900 bg-amber-700 text-white font-bold flex items-center justify-center text-[10px]">
-                                        +4k
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex items-center text-amber-400">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className="w-3 h-3 fill-current" />
-                                        ))}
-                                        <span className="font-bold text-slate-200 ml-1 text-xs font-mono">4.9/5</span>
-                                    </div>
-                                    <span className="text-[11px] text-slate-400">2,840+ verified completions</span>
-                                </div>
+                            <div className="flex items-center gap-2 text-xs text-slate-300">
+                                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                                <span>Accredited Peppol &amp; EU Compliant Invoicing</span>
                             </div>
 
                             <div className="h-4 w-px bg-slate-800 hidden sm:block" />
 
-                            <div className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span>Accredited Peppol & EU Compliant Invoicing</span>
+                            <div className="flex items-center gap-2 text-xs text-slate-300">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                                <span>Verified Cryptographic Certificates &amp; Diplomas</span>
                             </div>
                         </div>
                     </div>
