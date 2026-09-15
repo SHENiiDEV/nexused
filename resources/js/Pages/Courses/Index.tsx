@@ -4,6 +4,7 @@ import { AppLayout } from '../../Layouts/AppLayout';
 import { CheckoutModal } from '../../Components/CheckoutModal';
 import { CourseCover } from '../../Components/CourseCover';
 import { HeroSection } from '../../Components/HeroSection';
+import { BrandMarquee } from '../../Components/BrandMarquee';
 import {
     Award,
     BookOpen,
@@ -86,16 +87,6 @@ const CATEGORY_CARDS = [
         searchQuery: 'AI',
         tabId: 'ai',
     },
-];
-
-const TRUSTED_LOGOS = [
-    { name: 'Volkswagen', label: 'VOLKSWAGEN' },
-    { name: 'Samsung', label: 'SAMSUNG' },
-    { name: 'Cisco', label: 'CISCO' },
-    { name: 'Vimeo', label: 'vimeo' },
-    { name: 'P&G', label: 'P&G' },
-    { name: 'Citi', label: 'citi' },
-    { name: 'Ericsson', label: 'ERICSSON' },
 ];
 
 export default function Index({ courses, filters, enrolledCourseIds }: IndexProps) {
@@ -650,21 +641,8 @@ export default function Index({ courses, filters, enrolledCourseIds }: IndexProp
                 </div>
             </div>
 
-            {/* 5. Trusted Companies Logos (Udemy Style Clean Strip) */}
-            <div className="border-y border-slate-200 bg-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        Trusted by over 16,000 companies and leading engineering teams worldwide
-                    </p>
-                    <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-75">
-                        {TRUSTED_LOGOS.map((logo, idx) => (
-                            <span key={idx} className="font-black text-sm sm:text-base text-slate-500 tracking-wider">
-                                {logo.label}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            {/* 5. Infinite Trusted Enterprise Logos Marquee Carousel */}
+            <BrandMarquee />
 
             {/* Checkout Modal */}
             {selectedCourse && (
