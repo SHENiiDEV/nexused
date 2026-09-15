@@ -281,8 +281,8 @@ export function HeroSection({ totalCourses, onSelectCategory }: HeroSectionProps
                                 <span className="text-[11px] font-mono text-slate-500">Step 1 of 5</span>
                             </div>
 
-                            {/* Quick Select Track Pills */}
-                            <div className="grid grid-cols-5 gap-1.5 p-1 rounded-xl bg-slate-950/60 border border-slate-800/80">
+                            {/* Quick Select Track Pills (Scrollable on mobile, grid on desktop) */}
+                            <div className="flex sm:grid sm:grid-cols-5 gap-1.5 p-1 rounded-xl bg-slate-950/60 border border-slate-800/80 overflow-x-auto scrollbar-none">
                                 {HERO_TRACKS.map((track) => {
                                     const isSelected = track.id === selectedTrackId;
                                     const Icon = track.icon;
@@ -291,7 +291,7 @@ export function HeroSection({ totalCourses, onSelectCategory }: HeroSectionProps
                                             key={track.id}
                                             type="button"
                                             onClick={() => setSelectedTrackId(track.id)}
-                                            className={`p-2 rounded-lg text-center transition-all flex flex-col items-center gap-1 ${
+                                            className={`min-w-[78px] sm:min-w-0 p-2 rounded-lg text-center transition-all flex flex-col items-center gap-1 shrink-0 cursor-pointer ${
                                                 isSelected
                                                     ? 'bg-slate-800 text-white shadow-sm border border-slate-700'
                                                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'

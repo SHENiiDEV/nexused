@@ -3,21 +3,26 @@ import { Link, usePage } from '@inertiajs/react';
 import { PageProps, User } from '../types';
 import { MegaMenu } from '../Components/MegaMenu';
 import {
+    Award,
     BookOpen,
     Building2,
     CheckCircle2,
     ChevronDown,
+    ChevronRight,
     Compass,
     Cpu,
     DollarSign,
     Globe,
     GraduationCap,
+    Home,
+    Info,
     LogOut,
     Menu,
     Search,
     Shield,
     Sparkles,
     UserCheck,
+    UserCircle,
     X,
 } from 'lucide-react';
 
@@ -33,6 +38,8 @@ export function AppLayout({ children, title }: AppLayoutProps) {
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
 
     const handleGlobalSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,24 +58,24 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         : 'U';
 
     return (
-        <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans antialiased">
+        <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans antialiased selection:bg-emerald-500 selection:text-white">
             {/* Top Navigation Bar (Udemy Style Clean White) */}
-            <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white shadow-xs">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+            <header className="sticky top-0 z-40 w-full border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-2xs">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-3 sm:gap-4">
                     {/* Left: Brand + Explore Mega Menu Trigger */}
-                    <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+                    <div className="flex items-center gap-3 sm:gap-6 shrink-0">
                         <Link href="/courses" className="flex items-center gap-2 group">
                             <img
                                 src="/favicon.svg"
                                 alt="NexusEd"
-                                className="w-9 h-9 rounded-lg shadow-xs group-hover:scale-105 transition-transform"
+                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg shadow-xs group-hover:scale-105 transition-transform"
                             />
-                            <span className="text-xl font-extrabold tracking-tight text-slate-950">
+                            <span className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-950">
                                 Nexus<span className="text-emerald-600">Ed</span>
                             </span>
                         </Link>
 
-                        {/* Explore Mega Menu Button */}
+                        {/* Explore Mega Menu Button (Desktop) */}
                         <button
                             type="button"
                             onClick={() => setMegaMenuOpen(!megaMenuOpen)}
@@ -108,7 +115,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                     <span>My Learning</span>
                                 </Link>
 
-                                {/* Corporate Portal Link (Only if user has company or corporate role) */}
+                                {/* Corporate Portal Link */}
                                 {user.company_id && (
                                     <Link
                                         href="/corporate/dashboard"
@@ -142,13 +149,13 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                 )}
 
                                 {/* User Profile Badge */}
-                                <div className="flex items-center gap-2.5 pl-2 sm:pl-3 sm:border-l border-slate-200">
+                                <div className="flex items-center gap-2 sm:gap-2.5 pl-1 sm:pl-3 sm:border-l border-slate-200">
                                     <Link
                                         href="/dashboard"
                                         className="flex items-center gap-2 group cursor-pointer"
                                         title="Go to Dashboard"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center group-hover:bg-emerald-600 transition-colors shadow-2xs">
                                             {userInitials}
                                         </div>
                                         <div className="hidden md:block text-left leading-tight">
@@ -165,7 +172,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                                        className="p-1.5 sm:p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-slate-100 transition-colors cursor-pointer"
                                         title="Sign Out"
                                     >
                                         <LogOut className="w-4 h-4" />
@@ -173,7 +180,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                 </div>
                             </>
                         ) : (
-                            <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
                                 <Link
                                     href="/about"
                                     className="hidden lg:flex text-xs font-semibold text-slate-600 hover:text-slate-900 px-2 py-1.5"
@@ -188,115 +195,173 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                 </Link>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold rounded-xl border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
                                 >
                                     Log In
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-4 py-2 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
                                 >
                                     Sign Up
                                 </Link>
                             </div>
                         )}
 
-                        {/* Mobile Menu Button */}
+                        {/* Mobile Menu Trigger Button */}
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-950 hover:bg-slate-100 cursor-pointer"
+                            className="md:hidden p-2 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-slate-100 transition-colors cursor-pointer"
+                            aria-label="Toggle mobile menu"
                         >
                             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
                     </div>
                 </div>
 
-                {/* Mobile Drawer */}
+                {/* Mobile Drawer Slide-Over Sheet */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-slate-200 bg-white p-4 space-y-3 shadow-lg">
-                        <form onSubmit={handleGlobalSearch} className="relative mb-2">
-                            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <div className="md:hidden border-t border-slate-200 bg-white px-4 py-5 space-y-4 shadow-xl animate-in slide-in-from-top-2 duration-200">
+                        {/* Mobile Search Bar */}
+                        <form onSubmit={handleGlobalSearch} className="relative">
+                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search courses..."
-                                className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900"
+                                placeholder="Search courses, tracks, tech..."
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-slate-800 transition-all"
                             />
                         </form>
-                        <Link
-                            href="/courses"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            All Courses
-                        </Link>
-                        <Link
-                            href="/about"
-                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            About Us
-                        </Link>
+
+                        {/* User Status Profile Card if Logged In */}
                         {user ? (
-                            <>
+                            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                                        {userInitials}
+                                    </div>
+                                    <div>
+                                        <div className="text-xs font-bold text-slate-950">{user.name}</div>
+                                        <div className="text-[11px] text-slate-500 font-mono">{user.email}</div>
+                                    </div>
+                                </div>
+                                <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold uppercase">
+                                    {user.role}
+                                </span>
+                            </div>
+                        ) : null}
+
+                        {/* Navigation Links Grid */}
+                        <div className="space-y-1">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 pb-1">
+                                Navigation
+                            </div>
+                            <Link
+                                href="/courses"
+                                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <BookOpen className="w-4 h-4 text-emerald-600" />
+                                    <span>All Masterclasses &amp; Catalog</span>
+                                </span>
+                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                            </Link>
+
+                            <Link
+                                href="/dashboard"
+                                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <GraduationCap className="w-4 h-4 text-sky-600" />
+                                    <span>My Learning Dashboard</span>
+                                </span>
+                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                            </Link>
+
+                            <Link
+                                href="/about"
+                                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <span className="flex items-center gap-2.5">
+                                    <Info className="w-4 h-4 text-slate-500" />
+                                    <span>About NexusEd Global</span>
+                                </span>
+                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                            </Link>
+
+                            {user?.company_id && (
                                 <Link
-                                    href="/dashboard"
-                                    className="block px-3 py-2 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-slate-50"
+                                    href="/corporate/dashboard"
+                                    className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    My Learning &amp; Dashboard
+                                    <span className="flex items-center gap-2.5">
+                                        <Building2 className="w-4 h-4 text-teal-600" />
+                                        <span>Corporate Portal</span>
+                                    </span>
+                                    <ChevronRight className="w-4 h-4 text-slate-400" />
                                 </Link>
-                                {user.company_id && (
+                            )}
+
+                            {user?.role === 'admin' && (
+                                <>
                                     <Link
-                                        href="/corporate/dashboard"
-                                        className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                                        href="/admin/generator"
+                                        className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
-                                        Corporate Portal
+                                        <span className="flex items-center gap-2.5">
+                                            <Cpu className="w-4 h-4 text-amber-600" />
+                                            <span>AI Course Studio</span>
+                                        </span>
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
                                     </Link>
-                                )}
-                                {user.role === 'admin' && (
-                                    <>
-                                        <Link
-                                            href="/admin/generator"
-                                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            AI Course Studio
-                                        </Link>
-                                        <Link
-                                            href="/admin/transactions"
-                                            className="block px-3 py-2 rounded-lg text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Transaction Ledger
-                                        </Link>
-                                    </>
-                                )}
+                                    <Link
+                                        href="/admin/transactions"
+                                        className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <span className="flex items-center gap-2.5">
+                                            <Shield className="w-4 h-4 text-purple-600" />
+                                            <span>Transaction Ledger</span>
+                                        </span>
+                                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Auth actions in mobile menu */}
+                        {user ? (
+                            <div className="pt-2 border-t border-slate-100">
                                 <Link
                                     href="/logout"
                                     method="post"
                                     as="button"
-                                    className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors cursor-pointer"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    Sign Out
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Sign Out of Account</span>
                                 </Link>
-                            </>
+                            </div>
                         ) : (
-                            <div className="pt-2 border-t border-slate-100 flex gap-2">
+                            <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
                                 <Link
                                     href="/login"
-                                    className="flex-1 text-center py-2 rounded-lg border border-slate-300 text-xs font-bold text-slate-900"
+                                    className="text-center py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 hover:bg-slate-50 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Log In
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="flex-1 text-center py-2 rounded-lg bg-slate-900 text-xs font-bold text-white"
+                                    className="text-center py-2.5 rounded-xl bg-slate-900 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-xs"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Sign Up
@@ -323,8 +388,62 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 </div>
             )}
 
-            {/* Main Content Body */}
-            <main className="flex-1 w-full bg-slate-50/40">{children}</main>
+            {/* Main Content Body (With bottom padding for mobile sticky navigation bar) */}
+            <main className="flex-1 w-full bg-slate-50/40 pb-20 md:pb-0">{children}</main>
+
+            {/* Mobile Bottom Navigation Bar (Thumb Friendly) */}
+            <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 md:hidden flex items-center justify-around px-2 py-1.5 shadow-lg">
+                {/* Courses / Explore */}
+                <Link
+                    href="/courses"
+                    className="flex flex-col items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 transition-colors"
+                >
+                    <BookOpen className="w-5 h-5 text-emerald-600" />
+                    <span className="text-[10px] font-bold mt-0.5">Explore</span>
+                </Link>
+
+                {/* My Learning */}
+                <Link
+                    href={user ? '/dashboard' : '/login'}
+                    className="flex flex-col items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 transition-colors"
+                >
+                    <GraduationCap className="w-5 h-5 text-sky-600" />
+                    <span className="text-[10px] font-bold mt-0.5">My Learning</span>
+                </Link>
+
+                {/* Corporate / Business */}
+                <Link
+                    href="/corporate/dashboard"
+                    className="flex flex-col items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 transition-colors"
+                >
+                    <Building2 className="w-5 h-5 text-teal-600" />
+                    <span className="text-[10px] font-bold mt-0.5">Corporate</span>
+                </Link>
+
+                {/* About / Info */}
+                <Link
+                    href="/about"
+                    className="flex flex-col items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 transition-colors"
+                >
+                    <Info className="w-5 h-5 text-slate-500" />
+                    <span className="text-[10px] font-bold mt-0.5">About</span>
+                </Link>
+
+                {/* Profile / Sign In */}
+                <Link
+                    href={user ? '/dashboard' : '/login'}
+                    className="flex flex-col items-center justify-center p-1.5 text-slate-600 hover:text-emerald-700 transition-colors"
+                >
+                    {user ? (
+                        <div className="w-5 h-5 rounded-full bg-slate-900 text-white font-bold text-[9px] flex items-center justify-center">
+                            {userInitials}
+                        </div>
+                    ) : (
+                        <UserCircle className="w-5 h-5 text-slate-500" />
+                    )}
+                    <span className="text-[10px] font-bold mt-0.5">{user ? 'Account' : 'Sign In'}</span>
+                </Link>
+            </nav>
 
             {/* Clean Enterprise Footer */}
             <footer className="mt-auto border-t border-slate-200 bg-slate-900 text-slate-300 py-12 text-xs">

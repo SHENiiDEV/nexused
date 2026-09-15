@@ -318,8 +318,8 @@ export default function Index({ courses, filters, enrolledCourseIds }: IndexProp
                     </p>
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+                {/* Filter Tabs (Horizontal touch scrolling on mobile) */}
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto scrollbar-none py-1">
                     {[
                         { id: 'all', label: 'All Tracks' },
                         { id: 'languages', label: 'Languages & English' },
@@ -338,7 +338,7 @@ export default function Index({ courses, filters, enrolledCourseIds }: IndexProp
                                     setActiveTab(tab.id);
                                     setVisibleCount(6);
                                 }}
-                                className={`px-4 py-2 text-xs font-bold rounded-full transition-colors flex items-center gap-1.5 cursor-pointer ${
+                                className={`px-3.5 sm:px-4 py-2 text-xs font-bold rounded-full transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeTab === tab.id
                                         ? 'bg-slate-900 text-white shadow-sm'
                                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'

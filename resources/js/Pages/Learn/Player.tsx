@@ -151,32 +151,54 @@ export default function Player({
             <Head title={`${activeLesson.title} | ${course.title}`} />
 
             <div className="flex-1 flex flex-col md:flex-row min-h-[calc(100vh-4.5rem)] bg-white text-slate-900">
-                {/* Mobile sidebar toggle */}
-                <div className="md:hidden flex items-center justify-between p-4 bg-slate-50 border-b border-slate-200">
+                {/* Mobile curriculum top trigger bar */}
+                <div className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200 sticky top-16 z-20">
                     <button
-                        onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="flex items-center gap-2 text-xs font-semibold text-slate-700"
+                        onClick={() => setSidebarOpen(true)}
+                        className="flex items-center gap-2 text-xs font-bold text-slate-800 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs"
                     >
                         <Menu className="w-4 h-4 text-emerald-600" />
                         <span>Curriculum ({completedCount}/{totalCount})</span>
                     </button>
-                    <span className="font-mono text-xs text-emerald-700 font-bold">{progressPercent}%</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500 font-medium">Progress:</span>
+                        <span className="font-mono text-xs text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            {progressPercent}%
+                        </span>
+                    </div>
                 </div>
 
-                {/* Left Sidebar: Sticky Modules & Lessons */}
+                {/* Mobile Drawer Overlay & Left Sidebar for Desktop */}
+                {sidebarOpen && (
+                    <div
+                        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs md:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    />
+                )}
+
                 <aside
-                    className={`w-full md:w-80 lg:w-96 bg-slate-50 border-r border-slate-200 shrink-0 md:sticky md:top-18 md:h-[calc(100vh-4.5rem)] flex flex-col z-30 transition-all ${
-                        sidebarOpen ? 'block' : 'hidden md:flex'
+                    className={`fixed inset-y-0 left-0 z-50 w-4/5 max-w-sm bg-white border-r border-slate-200 flex flex-col shadow-2xl transition-transform duration-300 md:static md:w-80 lg:w-96 md:bg-slate-50 md:sticky md:top-18 md:h-[calc(100vh-4.5rem)] md:z-30 md:shadow-none md:translate-x-0 ${
+                        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                     }`}
                 >
                     {/* Course Header in Sidebar */}
-                    <div className="p-5 border-b border-slate-200 bg-white">
-                        <Link
-                            href={`/courses/${course.slug}`}
-                            className="text-xs text-slate-500 hover:text-emerald-700 flex items-center gap-1 mb-2 font-medium"
-                        >
-                            <ChevronLeft className="w-3.5 h-3.5" /> Course Overview
-                        </Link>
+                    <div className="p-4 sm:p-5 border-b border-slate-200 bg-white">
+                        <div className="flex items-center justify-between mb-2">
+                            <Link
+                                href={`/courses/${course.slug}`}
+                                className="text-xs text-slate-500 hover:text-emerald-700 flex items-center gap-1 font-medium"
+                            >
+                                <ChevronLeft className="w-3.5 h-3.5" /> Course Overview
+                            </Link>
+                            <button
+                                type="button"
+                                onClick={() => setSidebarOpen(false)}
+                                className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
                         <h2 className="text-sm font-bold text-slate-950 tracking-tight line-clamp-2">
                             {course.title}
                         </h2>
@@ -214,7 +236,7 @@ export default function Player({
                                                 onClick={() => handleSwitchLesson(lesson)}
                                                 className={`w-full text-left flex items-start gap-2.5 p-2.5 rounded-xl text-xs transition-all ${
                                                     isActive
-                                                        ? 'bg-white border border-slate-300 text-slate-950 font-semibold shadow-xs'
+                                                        ? 'bg-emerald-50 md:bg-white border border-emerald-200 md:border-slate-300 text-slate-950 font-semibold shadow-xs'
                                                         : 'text-slate-700 hover:bg-slate-100'
                                                 }`}
                                             >
@@ -242,7 +264,7 @@ export default function Player({
                 </aside>
 
                 {/* Main Content Area: Instant Lecture & Quizzes */}
-                <main className="flex-1 p-6 sm:p-10 max-w-4xl mx-auto w-full space-y-8">
+                <main className="flex-1 p-4 sm:p-8 lg:p-10 max-w-4xl mx-auto w-full space-y-8 pb-28 md:pb-10">
                     {/* Header */}
                     <div className="pb-6 border-b border-slate-200">
                         <div className="flex items-center gap-2 text-xs font-mono text-emerald-700 font-semibold mb-2">

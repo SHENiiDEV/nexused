@@ -235,6 +235,46 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
                 </div>
             </div>
 
+            {/* Mobile Sticky Bottom Enrollment / Action Bar */}
+            <div className="lg:hidden fixed bottom-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/90 p-3 sm:p-4 flex items-center justify-between gap-3 shadow-xl">
+                <div className="flex flex-col">
+                    <div className="text-[10px] text-slate-500 font-mono uppercase font-bold">
+                        {isEnrolled ? 'Enrollment Active' : 'Lifetime Access'}
+                    </div>
+                    <div className="text-base sm:text-lg font-black text-slate-950 font-mono flex items-baseline gap-1">
+                        <span>€{Number(course.price).toFixed(2)}</span>
+                        <span className="text-[10px] text-slate-500 font-sans font-normal">+ VAT</span>
+                    </div>
+                </div>
+
+                {isEnrolled ? (
+                    <Link
+                        href={`/learn/${course.slug}`}
+                        className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5"
+                    >
+                        <GraduationCap className="w-4 h-4 text-emerald-400" />
+                        <span>Continue Player</span>
+                    </Link>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => openModal('b2b_license')}
+                            className="px-3 py-2 rounded-xl border border-slate-300 text-slate-800 font-semibold text-xs"
+                        >
+                            B2B
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => openModal('b2c_course')}
+                            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-900/10 flex items-center gap-1.5 cursor-pointer"
+                        >
+                            <span>Enroll Now</span>
+                        </button>
+                    </div>
+                )}
+            </div>
+
             {/* Checkout Modal */}
             <CheckoutModal
                 isOpen={modalOpen}
