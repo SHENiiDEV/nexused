@@ -447,7 +447,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
             {/* Clean Enterprise Footer */}
             <footer className="mt-auto border-t border-slate-200 bg-slate-900 text-slate-300 py-12 text-xs">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                     {/* Top row: Brand & Business prompt */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-8 border-b border-slate-800 gap-4">
                         <div className="flex items-start gap-3">
@@ -463,61 +463,103 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         </div>
                         <Link
                             href="/corporate/dashboard"
-                            className="px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors cursor-pointer"
+                            className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors cursor-pointer"
                         >
                             Enterprise &amp; Teams
                         </Link>
                     </div>
 
-                    {/* Columns */}
+                    {/* Columns (Pure Clickable Links) */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs">
                         <div className="space-y-2.5">
                             <div className="font-bold text-white uppercase tracking-wider text-[11px]">Learning Tracks</div>
                             <div><Link href="/courses" className="hover:text-white transition-colors">All Masterclasses</Link></div>
-                            <div><Link href="/courses?search=English" className="hover:text-white transition-colors">Languages &amp; Communication</Link></div>
-                            <div><Link href="/courses?search=Design" className="hover:text-white transition-colors">Product Design &amp; UX</Link></div>
+                            <div><Link href="/courses?search=English" className="hover:text-white transition-colors">Languages &amp; Fluency</Link></div>
+                            <div><Link href="/courses?search=Design" className="hover:text-white transition-colors">Product Design &amp; Figma</Link></div>
                             <div><Link href="/courses?search=Distributed" className="hover:text-white transition-colors">Distributed Systems &amp; Go</Link></div>
                             <div><Link href="/courses?search=AI" className="hover:text-white transition-colors">Autonomous AI &amp; Agents</Link></div>
+                            <div><Link href="/courses?search=Cloud" className="hover:text-white transition-colors">Cloud &amp; Kubernetes</Link></div>
                         </div>
 
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Company &amp; Enterprise</div>
-                            <div><Link href="/about" className="hover:text-white transition-colors text-emerald-400 font-semibold">About NexusEd Global</Link></div>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Platform &amp; Portals</div>
+                            <div><Link href="/dashboard" className="hover:text-white transition-colors">Student Dashboard</Link></div>
                             <div><Link href="/corporate/dashboard" className="hover:text-white transition-colors">Corporate Portal</Link></div>
-                            <div><span className="text-slate-400">Team Licensing &amp; Seats</span></div>
-                            <div><span className="text-slate-400">Peppol BIS 3.0 / UBL 2.1</span></div>
-                            <div><span className="text-slate-400">Skill Matrix &amp; Analytics</span></div>
+                            <div><Link href="/courses" className="hover:text-white transition-colors">Explore Marketplace</Link></div>
+                            <div><Link href="/login" className="hover:text-white transition-colors">Sign In</Link></div>
+                            <div><Link href="/register" className="hover:text-white transition-colors">Register Account</Link></div>
                         </div>
 
                         <div className="space-y-2.5">
-                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Trust &amp; Security</div>
-                            <div><span className="text-slate-400">256-Bit Bank-Grade Encryption</span></div>
-                            <div><span className="text-slate-400">PCI-DSS Level 1 Compliant</span></div>
-                            <div><span className="text-slate-400">Verified Diplomas &amp; Badges</span></div>
-                            <div><span className="text-slate-400">99.9% Platform SLA</span></div>
+                            <div className="font-bold text-white uppercase tracking-wider text-[11px]">Company &amp; About</div>
+                            <div><Link href="/about" className="hover:text-white transition-colors text-emerald-400 font-semibold">About NexusEd Global</Link></div>
+                            <div><Link href="/about" className="hover:text-white transition-colors">Entity &amp; Governance</Link></div>
+                            <div><Link href="/corporate/dashboard" className="hover:text-white transition-colors">Enterprise Solutions</Link></div>
+                            <div>
+                                <a
+                                    href={`mailto:${company?.email || 'info@nexused.co.uk'}`}
+                                    className="hover:text-white transition-colors text-slate-300 underline"
+                                >
+                                    Contact Support
+                                </a>
+                            </div>
                         </div>
 
                         <div className="space-y-2.5">
                             <div className="font-bold text-white uppercase tracking-wider text-[11px]">Legal &amp; Compliance</div>
-                            <div><Link href="/about" className="hover:text-white transition-colors">Entity &amp; Governance</Link></div>
                             <div><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></div>
                             <div><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy (GDPR)</Link></div>
+                            <div><Link href="/about" className="hover:text-white transition-colors">Verified Diplomas</Link></div>
                             <div>
                                 <a
-                                    href={`mailto:${company?.email || 'legal@nexused.com'}`}
-                                    className="hover:text-white transition-colors text-slate-300 underline"
+                                    href={`mailto:${company?.email || 'info@nexused.co.uk'}`}
+                                    className="hover:text-white transition-colors text-slate-300 underline font-mono"
                                 >
-                                    {company?.email || 'legal@nexused.com'}
+                                    {company?.email || 'info@nexused.co.uk'}
                                 </a>
                             </div>
-                            <div className="text-[11px] text-slate-400 pt-1 font-mono">
-                                Reg. {company?.number || 'HRB 248910 B'}
+                        </div>
+                    </div>
+
+                    {/* Payment Gateways & Security Trust Badges Strip */}
+                    <div className="pt-6 pb-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+                            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                                <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
+                                <span>Guaranteed Secure Payments &amp; 256-Bit SSL Encryption</span>
+                            </div>
+                        </div>
+
+                        {/* High-Resolution Payment Logos (Visa, MasterCard, PCI DSS) */}
+                        <div className="flex items-center gap-3 flex-wrap justify-center">
+                            <div className="bg-white px-3.5 py-1.5 rounded-lg shadow-sm flex items-center justify-center hover:scale-105 transition-transform" title="Verified by Visa">
+                                <img
+                                    src="/images/payments/visa.png"
+                                    alt="Visa"
+                                    className="h-5 sm:h-6 w-auto object-contain"
+                                />
+                            </div>
+
+                            <div className="bg-white px-3.5 py-1.5 rounded-lg shadow-sm flex items-center justify-center hover:scale-105 transition-transform" title="Mastercard Identity Check">
+                                <img
+                                    src="/images/payments/mastercard.png"
+                                    alt="MasterCard"
+                                    className="h-5 sm:h-6 w-auto object-contain"
+                                />
+                            </div>
+
+                            <div className="bg-white px-3 py-1.5 rounded-lg shadow-sm flex items-center justify-center hover:scale-105 transition-transform" title="PCI-DSS Level 1 Compliant">
+                                <img
+                                    src="/images/payments/pci-dss.png"
+                                    alt="PCI DSS Compliant"
+                                    className="h-5 sm:h-6 w-auto object-contain"
+                                />
                             </div>
                         </div>
                     </div>
 
                     {/* Bottom Row */}
-                    <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[11px] text-slate-400">
+                    <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[11px] text-slate-400">
                         <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2 text-slate-300">
                                 <img src="/favicon.svg" alt="NexusEd" className="w-5 h-5 rounded" />
