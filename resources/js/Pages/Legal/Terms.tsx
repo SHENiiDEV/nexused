@@ -49,7 +49,7 @@ export default function Terms() {
                         </Link>
 
                         {/* Switcher Pills */}
-                        <div className="inline-flex items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs">
+                        <div className="inline-flex flex-wrap items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs">
                             <span className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
                                 Terms of Service
                             </span>
@@ -59,6 +59,9 @@ export default function Terms() {
                             >
                                 Privacy Policy
                             </Link>
+                            <Link href="/delivery-and-returns" className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium transition-colors">
+                                Delivery &amp; Returns
+                            </Link>
                         </div>
                     </div>
 
@@ -66,7 +69,7 @@ export default function Terms() {
                     <div className="space-y-3 max-w-3xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
                             <Scale className="w-3.5 h-3.5" />
-                            <span>STATUTORY USER AGREEMENT • VERSION 2.4</span>
+                            <span>USER AGREEMENT • UPDATED 30 OCTOBER 2026</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
                             Terms of Service
@@ -238,6 +241,9 @@ export default function Terms() {
                                 Upon successful payment of the applicable course tuition, NexusEd grants you a personal, non-exclusive, non-transferable, lifetime license to access the curriculum, review lesson content, participate in comprehension assessments, and download issued completion diplomas.
                             </p>
                             <p>
+                                Delivery is digital; no physical goods are shipped. Access is activated after successful payment confirmation. Our <Link href="/delivery-and-returns" className="text-emerald-700 underline">Digital Delivery, Withdrawal &amp; Refund Policy</Link> explains access, support, consumer withdrawal rights and refunds and forms part of these Terms. Starting a course does not by itself waive your withdrawal rights.
+                            </p>
+                            <p>
                                 All course curriculum text, interactive terminal drills, audio/video assets, and certification signatures are proprietary intellectual property of {companyName} or its licensed contributors. Unauthorized scraping, wholesale reproduction, or reselling of course materials is strictly prohibited and subject to civil and criminal liability.
                             </p>
                         </section>
@@ -269,7 +275,7 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 5.0</span>
                             </div>
                             <p>
-                                Corporate team subscriptions grant allocated student seats up to the purchased seat threshold. Corporate administrators may add verified enterprise members and monitor employee educational progress through the corporate portal.
+                                Corporate team licenses are available as one-time purchases of employee seats. They do not automatically renew or create recurring subscription charges. Corporate administrators may allocate seats up to the purchased limit and monitor employee educational progress through the corporate portal. The scope of access is described in the selected offer and order confirmation.
                             </p>
                             <p>
                                 In accordance with the <strong>European Directive 2014/55/EU</strong>, corporate purchases generate fully compliant <strong>Peppol BIS 3.0 (UBL 2.1 XML)</strong> electronic invoices containing valid European VAT identifiers and cryptographic transaction audit records.
@@ -294,7 +300,13 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 7.0</span>
                             </div>
                             <p>
-                                To the maximum extent permitted under applicable German and European Union law, NexusEd and {companyName} provide our educational platform on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo; basis. In no event shall our total aggregate liability exceed the actual fees paid by you for the specific course or license giving rise to the claim.
+                                We are liable without limitation for intent and gross negligence, for culpable injury to life, body or health, and wherever liability is mandatory by law, including under the German Product Liability Act. Liability under an expressly assumed guarantee remains subject to that guarantee.
+                            </p>
+                            <p>
+                                For ordinary negligence, we are liable for breach of an essential contractual obligation whose performance is necessary for the proper execution of the contract and on which you may normally rely. In that case, liability is limited to damage that was foreseeable and typical for the contract when it was concluded. Otherwise, liability for ordinary negligence is excluded, subject to the exceptions above.
+                            </p>
+                            <p>
+                                Your statutory rights concerning the supply and conformity of digital products, including remedies for defects, remain unaffected. These Terms do not exclude mandatory consumer rights or provide a blanket exclusion of warranties.
                             </p>
                         </section>
 
@@ -305,7 +317,10 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 8.0</span>
                             </div>
                             <p>
-                                This Agreement is governed by and construed in accordance with the laws of the Federal Republic of Germany, without regard to its conflicts of law provisions. The courts of Berlin, Germany shall have exclusive jurisdiction over any dispute arising out of or in connection with these Terms.
+                                This Agreement is governed by the laws of the Federal Republic of Germany. If you are a consumer, this choice does not deprive you of the protection of mandatory provisions of the law that would apply without this choice, including the law of your habitual residence where Article 6 of Regulation (EC) No 593/2008 (Rome I) applies.
+                            </p>
+                            <p>
+                                For consumers, jurisdiction is determined by applicable law, including Articles 17–19 of Regulation (EU) No 1215/2012 where applicable. No exclusive Berlin jurisdiction is imposed on consumers. For business customers who are merchants, legal entities under public law or special funds under public law, the courts of Berlin have exclusive jurisdiction to the extent a jurisdiction agreement is legally permitted. Mandatory jurisdiction rules remain unaffected.
                             </p>
                             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
                                 <div className="font-bold text-slate-900">Official Legal Notice Address:</div>

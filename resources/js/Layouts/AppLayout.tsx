@@ -509,6 +509,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                             <div className="font-bold text-white uppercase tracking-wider text-[11px]">Legal &amp; Compliance</div>
                             <div><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></div>
                             <div><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy (GDPR)</Link></div>
+                            <div><Link href="/delivery-and-returns" className="hover:text-white transition-colors">Delivery &amp; Returns</Link></div>
                             <div><Link href="/about" className="hover:text-white transition-colors">Verified Diplomas</Link></div>
                             <div>
                                 <a

@@ -293,6 +293,11 @@ export function CheckoutModal({
                         </div>
                     )}
 
+                    <p className="text-xs leading-relaxed text-slate-600">
+                        Digital access is activated after payment confirmation. {isB2B && 'Team licenses are one-time purchases with no automatic renewal. '}
+                        Read the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-emerald-700 underline">Terms of Service</a> and <a href="/delivery-and-returns" target="_blank" rel="noopener noreferrer" className="text-emerald-700 underline">Delivery, Withdrawal &amp; Refund Policy</a> before paying. Consumers have a 14-day right of withdrawal; starting a course does not by itself waive that right. These links open in a new tab.
+                    </p>
+
                     {/* Pay Button */}
                     <button
                         type="submit"

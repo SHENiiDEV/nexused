@@ -49,7 +49,7 @@ export default function Privacy() {
                         </Link>
 
                         {/* Switcher Pills */}
-                        <div className="inline-flex items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs">
+                        <div className="inline-flex flex-wrap items-center p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 text-xs">
                             <Link
                                 href="/terms"
                                 className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium transition-colors"
@@ -59,6 +59,9 @@ export default function Privacy() {
                             <span className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
                                 Privacy Policy
                             </span>
+                            <Link href="/delivery-and-returns" className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium transition-colors">
+                                Delivery &amp; Returns
+                            </Link>
                         </div>
                     </div>
 
@@ -313,7 +316,10 @@ export default function Privacy() {
                                 <span className="text-xs font-mono font-bold text-slate-400">Art. 5(1)(e)</span>
                             </div>
                             <p>
-                                Personal profile data is retained as long as your account remains active. Upon account deletion, personal identifiers are purged within thirty (30) days, except for fiscal invoice records and Peppol UBL transactions, which are retained for ten (10) years in accordance with Section 147 of the German Fiscal Code (AO).
+                                Personal profile data is retained for as long as necessary to provide your account and services. You may request erasure using the contact details in this policy. Data that must be retained to comply with a legal obligation or to establish, exercise or defend legal claims is retained only for that purpose and for the applicable period.
+                            </p>
+                            <p>
+                                Where German tax retention requirements apply, Section 147(3) of the German Fiscal Code (AO) generally requires accounting vouchers, including invoices, to be retained for eight (8) years; specified books and annual accounts for ten (10) years; and other covered records generally for six (6) years. Under Section 147(4) AO, the period generally starts at the end of the calendar year in which the relevant record was created or the relevant event occurred. Longer retention may be required where statutory extensions apply, including for unresolved tax matters. Electronic invoices, including Peppol UBL records, follow the period applicable to their document category; the format does not itself require ten years of retention.
                             </p>
                         </section>
 

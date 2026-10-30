@@ -2,11 +2,24 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\TestCase;
 
 class LegalAndAboutPagesTest extends TestCase
 {
+    public function test_delivery_and_returns_page_is_public_with_company_contact_details(): void
+    {
+        $response = $this->get('/delivery-and-returns');
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Legal/DeliveryAndReturns')
+            ->has('company.name')
+            ->has('company.address')
+            ->has('company.email')
+        );
+    }
+
     public function test_about_page_renders_with_company_props(): void
     {
         $response = $this->get('/about');

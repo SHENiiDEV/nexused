@@ -8,7 +8,8 @@ use App\Models\Invoice;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
-use Illuminate\Support\Str;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class B2BInvoiceService
 {
@@ -27,10 +28,10 @@ class B2BInvoiceService
             return $existing;
         }
 
-        $seqNumber = str_pad((string)(Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
-        $invoiceNumber = 'NEX-EU-' . date('Y') . '-' . $seqNumber;
+        $seqNumber = str_pad((string) (Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
+        $invoiceNumber = 'NEX-EU-'.date('Y').'-'.$seqNumber;
 
-        $subtotal = (float)$transaction->amount;
+        $subtotal = (float) $transaction->amount;
         $vatRate = 0.19; // 19% standard EU VAT rate
         $taxAmount = round($subtotal * $vatRate, 2);
         $totalAmount = $subtotal + $taxAmount;
@@ -88,15 +89,15 @@ class B2BInvoiceService
             return $existing;
         }
 
-        $seqNumber = str_pad((string)(Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
-        $invoiceNumber = 'NEX-INV-' . date('Y') . '-' . $seqNumber;
+        $seqNumber = str_pad((string) (Invoice::count() + 1), 5, '0', STR_PAD_LEFT);
+        $invoiceNumber = 'NEX-INV-'.date('Y').'-'.$seqNumber;
 
-        $totalAmount = (float)$transaction->amount;
+        $totalAmount = (float) $transaction->amount;
         $vatRate = 0.19; // 19% standard EU VAT rate
         $subtotal = round($totalAmount / (1 + $vatRate), 2);
         $taxAmount = round($totalAmount - $subtotal, 2);
 
-        $customerName = trim($user->name . ' ' . ($user->surname ?? ''));
+        $customerName = trim($user->name.' '.($user->surname ?? ''));
         if (empty($customerName)) {
             $customerName = $user->email;
         }
@@ -161,27 +162,28 @@ class B2BInvoiceService
         }
 
         $user = $transaction->user;
-        if (!$user) {
+        if (! $user) {
             $user = User::find($transaction->user_id);
         }
 
-        $isCorporate = (bool)$transaction->company_id || (($transaction->metadata['type'] ?? '') === 'b2b_license');
+        $isCorporate = (bool) $transaction->company_id || (($transaction->metadata['type'] ?? '') === 'b2b_license');
 
         if ($isCorporate) {
             $company = $transaction->company ?? $user?->company ?? Company::first();
             if ($company && $user) {
                 $seats = $transaction->metadata['seats'] ?? 10;
                 $title = $transaction->metadata['course_title'] ?? 'Corporate Training Package';
+
                 return $this->createInvoice($company, $user, $transaction, $title, $seats);
             }
         }
 
         $course = $transaction->course;
-        if (!$course && $transaction->course_id) {
-            $course = \App\Models\Course::find($transaction->course_id);
+        if (! $course && $transaction->course_id) {
+            $course = Course::find($transaction->course_id);
         }
 
-        if (!$course) {
+        if (! $course) {
             $course = new Course([
                 'title' => $transaction->metadata['course_title'] ?? 'NexusEd Specialized Curriculum',
                 'category' => 'Technical Mastery',
@@ -204,9 +206,9 @@ class B2BInvoiceService
         $dueDate = date('Y-m-d', strtotime('+30 days'));
 
         $subtotal = $invoice->amount - $invoice->tax_amount;
-        $subtotalFmt = number_format((float)$subtotal, 2, '.', '');
-        $taxFmt = number_format((float)$invoice->tax_amount, 2, '.', '');
-        $totalFmt = number_format((float)$invoice->amount, 2, '.', '');
+        $subtotalFmt = number_format((float) $subtotal, 2, '.', '');
+        $taxFmt = number_format((float) $invoice->tax_amount, 2, '.', '');
+        $totalFmt = number_format((float) $invoice->amount, 2, '.', '');
 
         $customerName = htmlspecialchars($invoice->customer_name ?? 'Corporate Customer', ENT_XML1);
         $customerVat = htmlspecialchars($invoice->customer_vat ?? 'EU000000000', ENT_XML1);
@@ -317,9 +319,9 @@ XML;
         $lineNum = 1;
         foreach ($items as $item) {
             $itemDesc = htmlspecialchars($item['name'], ENT_XML1);
-            $qty = number_format((float)($item['quantity'] ?? 1), 2, '.', '');
-            $unitPrice = number_format((float)($item['unit_price'] ?? $subtotal), 2, '.', '');
-            $lineExtension = number_format((float)($item['unit_price'] * $item['quantity']), 2, '.', '');
+            $qty = number_format((float) ($item['quantity'] ?? 1), 2, '.', '');
+            $unitPrice = number_format((float) ($item['unit_price'] ?? $subtotal), 2, '.', '');
+            $lineExtension = number_format((float) ($item['unit_price'] * $item['quantity']), 2, '.', '');
 
             $xml .= <<<XML
 
@@ -356,18 +358,18 @@ XML;
      */
     public function generatePdfInvoice(Invoice $invoice): string
     {
-        $options = new \Dompdf\Options();
+        $options = new Options;
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
         $options->set('defaultFont', 'Helvetica');
         $options->set('dpi', 150);
 
-        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf = new Dompdf($options);
 
         $subtotal = $invoice->amount - $invoice->tax_amount;
-        $subtotalFmt = number_format((float)$subtotal, 2, '.', ',');
-        $taxFmt = number_format((float)$invoice->tax_amount, 2, '.', ',');
-        $totalFmt = number_format((float)$invoice->amount, 2, '.', ',');
+        $subtotalFmt = number_format((float) $subtotal, 2, '.', ',');
+        $taxFmt = number_format((float) $invoice->tax_amount, 2, '.', ',');
+        $totalFmt = number_format((float) $invoice->amount, 2, '.', ',');
         $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
 
         $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
@@ -375,23 +377,23 @@ XML;
         $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
         $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
 
-        $isB2B = (bool)$invoice->company_id;
+        $isB2B = (bool) $invoice->company_id;
         $transaction = $invoice->transaction;
         $course = $transaction?->course;
 
         if ($isB2B) {
             $itemTitle = htmlspecialchars($transaction?->metadata['course_title'] ?? 'Enterprise Learning Seats Package');
-            $itemSubtitle = "Annual Corporate Team License with Full Skill Matrix & Certifications";
+            $itemSubtitle = 'Corporate Team License with Full Skill Matrix & Certifications';
         } else {
             $itemTitle = htmlspecialchars($course?->title ?? $transaction?->metadata['course_title'] ?? 'NexusEd Masterclass Access');
-            $itemSubtitle = "Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma";
+            $itemSubtitle = 'Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma';
         }
 
         $customerName = htmlspecialchars($invoice->customer_name ?? 'NexusEd Customer');
         $customerAddress = nl2br(htmlspecialchars($invoice->customer_address ?? 'Europe'));
-        $customerVatHtml = !empty($invoice->customer_vat)
-            ? "<br><strong>VAT / Tax ID:</strong> " . htmlspecialchars($invoice->customer_vat)
-            : ($invoice->user ? "<br><strong>Account Email:</strong> " . htmlspecialchars($invoice->user->email) : "");
+        $customerVatHtml = ! empty($invoice->customer_vat)
+            ? '<br><strong>VAT / Tax ID:</strong> '.htmlspecialchars($invoice->customer_vat)
+            : ($invoice->user ? '<br><strong>Account Email:</strong> '.htmlspecialchars($invoice->user->email) : '');
 
         $paymentGateway = $transaction ? strtoupper(str_replace('_', ' ', $transaction->payment_gateway)) : 'ELECTRONIC TRANSFER';
         $txnRef = $transaction ? htmlspecialchars($transaction->transaction_ref) : 'TXN-ONLINE';
@@ -527,9 +529,9 @@ HTML;
     public function renderHtmlInvoice(Invoice $invoice): string
     {
         $subtotal = $invoice->amount - $invoice->tax_amount;
-        $subtotalFmt = number_format((float)$subtotal, 2, '.', ',');
-        $taxFmt = number_format((float)$invoice->tax_amount, 2, '.', ',');
-        $totalFmt = number_format((float)$invoice->amount, 2, '.', ',');
+        $subtotalFmt = number_format((float) $subtotal, 2, '.', ',');
+        $taxFmt = number_format((float) $invoice->tax_amount, 2, '.', ',');
+        $totalFmt = number_format((float) $invoice->amount, 2, '.', ',');
         $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
 
         $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
@@ -537,23 +539,23 @@ HTML;
         $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
         $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
 
-        $isB2B = (bool)$invoice->company_id;
+        $isB2B = (bool) $invoice->company_id;
         $transaction = $invoice->transaction;
         $course = $transaction?->course;
 
         if ($isB2B) {
             $itemTitle = htmlspecialchars($transaction?->metadata['course_title'] ?? 'Enterprise Learning Seats Package');
-            $itemSubtitle = "Annual Corporate Team License with Full Skill Matrix, Terminal Labs & Verifiable Certifications";
+            $itemSubtitle = 'Corporate Team License with Full Skill Matrix, Terminal Labs & Verifiable Certifications';
         } else {
             $itemTitle = htmlspecialchars($course?->title ?? $transaction?->metadata['course_title'] ?? 'NexusEd Specialized Masterclass Access');
-            $itemSubtitle = "Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma";
+            $itemSubtitle = 'Lifetime Access to Interactive Browser Drills, Test Suites & Cryptographic Diploma';
         }
 
         $customerName = htmlspecialchars($invoice->customer_name ?? 'NexusEd Customer');
         $customerAddress = nl2br(htmlspecialchars($invoice->customer_address ?? 'Europe'));
-        $customerVatHtml = !empty($invoice->customer_vat)
-            ? "<br><strong>VAT / Tax ID:</strong> " . htmlspecialchars($invoice->customer_vat)
-            : ($invoice->user ? "<br><strong>Account Email:</strong> " . htmlspecialchars($invoice->user->email) : "");
+        $customerVatHtml = ! empty($invoice->customer_vat)
+            ? '<br><strong>VAT / Tax ID:</strong> '.htmlspecialchars($invoice->customer_vat)
+            : ($invoice->user ? '<br><strong>Account Email:</strong> '.htmlspecialchars($invoice->user->email) : '');
 
         $paymentGateway = $transaction ? strtoupper(str_replace('_', ' ', $transaction->payment_gateway)) : 'ELECTRONIC TRANSFER';
         $txnRef = $transaction ? htmlspecialchars($transaction->transaction_ref) : 'TXN-ONLINE';

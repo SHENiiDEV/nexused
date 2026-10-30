@@ -6,6 +6,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LearnController;
+use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,6 +32,10 @@ Route::get('/privacy', function () {
     return Inertia::render('Legal/Privacy');
 })->name('privacy');
 
+Route::get('/delivery-and-returns', function () {
+    return Inertia::render('Legal/DeliveryAndReturns');
+})->name('delivery-and-returns');
+
 // Authentication
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -41,7 +46,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
     // Student Dashboard & Gamification Hub
-    Route::get('/dashboard', [\App\Http\Controllers\StudentDashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
 
     // SPA Course Player & Interactive Learning
     Route::get('/learn/{courseSlug}/{lessonSlug?}', [LearnController::class, 'player'])->name('learn.player');

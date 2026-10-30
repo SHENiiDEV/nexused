@@ -139,6 +139,24 @@
                                 </tr>
                             </table>
 
+                            <div style="margin-top: 24px; font-size: 13px; line-height: 1.6; color: #475569;">
+                                <p><a href="{{ route('delivery-and-returns') }}" style="color: #059669; text-decoration: underline;">Digital Delivery, Withdrawal &amp; Refund Policy</a></p>
+                                @if(!$isCorporate)
+                                    <p><strong>Consumer withdrawal notice:</strong> If you purchased as a consumer, you may withdraw without giving a reason within 14 days after the day the contract is concluded. Mandatory rules providing a later start or a longer period remain unaffected. Opening or starting a course does not by itself waive this right.</p>
+                                    <p>Send an unequivocal statement of withdrawal to {{ $company['name'] }}, {{ $company['address'] }}, email: {{ $company['email'] }}. Sending it before the withdrawal period expires is sufficient. No physical return is required. We will reimburse all payments under the withdrawn contract without undue delay and within 14 days after being informed, using the original payment method unless you expressly agree otherwise, with no reimbursement fees. Access covered by that contract will end when it is unwound.</p>
+                                    <p><strong>Optional model withdrawal form:</strong><br>
+                                        To: {{ $company['name'] }}, {{ $company['address'] }}; {{ $company['email'] }}<br>
+                                        I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract for the supply of the following digital content / provision of the following service (*): ______<br>
+                                        Ordered on (*) / received on (*): ______<br>
+                                        Name of consumer(s): ______<br>
+                                        Address of consumer(s): ______<br>
+                                        Signature of consumer(s) (only if notified on paper): ______<br>
+                                        Date: ______<br>
+                                        (*) Delete as appropriate.
+                                    </p>
+                                @endif
+                            </div>
+
                             <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.6; color: #64748b; text-align: center;">
                                 Need assistance or a duplicate VAT invoice? Visit your <a href="{{ config('app.url') }}/dashboard" style="color: #059669; font-weight: 600; text-decoration: underline;">User Dashboard</a> or contact <a href="mailto:{{ $company['email'] ?? 'info@nexused.co.uk' }}" style="color: #059669; font-weight: 600;">{{ $company['email'] ?? 'info@nexused.co.uk' }}</a>.
                             </p>

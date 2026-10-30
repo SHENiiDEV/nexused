@@ -235,7 +235,7 @@ export default function About() {
                                     Official Entity &amp; European Registration
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed">
-                                    NexusEd operates under strict compliance with the commercial code of the Federal Republic of Germany and European Union data privacy frameworks. All institutional contracts, course subscriptions, and digital certifications are legally governed by the registered entity.
+                                    NexusEd operates under strict compliance with the commercial code of the Federal Republic of Germany and European Union data privacy frameworks. All institutional contracts, course licenses, and digital certifications are legally governed by the registered entity.
                                 </p>
                                 <div className="pt-2 flex flex-wrap gap-2 text-xs font-medium text-slate-600">
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100">
