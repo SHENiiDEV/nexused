@@ -28,9 +28,9 @@ class LegalAndAboutPagesTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('About')
             ->has('company', fn (Assert $company) => $company
-                ->where('name', 'NexusEd Global GmbH')
-                ->where('number', 'HRB 248910 B')
-                ->where('address', 'Friedrichstraße 200, 10117 Berlin, Germany')
+                ->where('name', 'TRUE CENTRIC LTD')
+                ->where('number', '15642952')
+                ->where('address', '20 Wenlock Road, London, England, N1 7GU')
                 ->where('email', 'legal@nexused.com')
             )
         );

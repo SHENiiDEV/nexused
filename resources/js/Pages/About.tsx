@@ -235,7 +235,7 @@ export default function About() {
                                     Official Entity &amp; European Registration
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed">
-                                    NexusEd operates under strict compliance with the commercial code of the Federal Republic of Germany and European Union data privacy frameworks. All institutional contracts, course licenses, and digital certifications are legally governed by the registered entity.
+                                    NexusEd is operated by TRUE CENTRIC LTD, a company registered in England and Wales. Our Terms of Service set out the law and jurisdiction applicable to purchases, and our Privacy Policy explains how we handle personal data under applicable UK and, where relevant, EU data protection law.
                                 </p>
                                 <div className="pt-2 flex flex-wrap gap-2 text-xs font-medium text-slate-600">
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100">
@@ -262,20 +262,20 @@ export default function About() {
                                     <div>
                                         <div className="text-slate-500 font-medium">Operating Entity</div>
                                         <div className="font-bold text-slate-900 text-sm mt-0.5">
-                                            {company?.name || 'NexusEd Global GmbH'}
+                                            {company?.name || 'TRUE CENTRIC LTD'}
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="text-slate-500 font-medium">Commercial Register No.</div>
+                                        <div className="text-slate-500 font-medium">Company Registration No.</div>
                                         <div className="font-mono font-bold text-slate-900 mt-0.5">
-                                            {company?.number || 'HRB 248910 B'}
+                                            {company?.number || '15642952'}
                                         </div>
                                     </div>
                                     <div>
                                         <div className="text-slate-500 font-medium">Registered Office</div>
                                         <div className="text-slate-800 mt-0.5 flex items-start gap-1.5">
                                             <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
-                                            <span>{company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany'}</span>
+                                            <span>{company?.address || '20 Wenlock Road, London, England, N1 7GU'}</span>
                                         </div>
                                     </div>
                                     <div>

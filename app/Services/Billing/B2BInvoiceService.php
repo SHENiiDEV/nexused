@@ -215,9 +215,26 @@ class B2BInvoiceService
         $customerAddr = htmlspecialchars($invoice->customer_address ?? 'Europe', ENT_XML1);
         $countryCode = $company->country_code ?? 'DE';
 
-        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'), ENT_XML1);
-        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'), ENT_XML1);
-        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'), ENT_XML1);
+        $companyName = htmlspecialchars(config('company.name', 'TRUE CENTRIC LTD'), ENT_XML1);
+        $companyNumber = htmlspecialchars(config('company.number', '15642952'), ENT_XML1);
+        $companyAddress = htmlspecialchars(config('company.address', '20 Wenlock Road, London, England, N1 7GU'), ENT_XML1);
+        $companyStreet = htmlspecialchars(config('company.street'), ENT_XML1);
+        $companyCity = htmlspecialchars(config('company.city'), ENT_XML1);
+        $companyPostcode = htmlspecialchars(config('company.postcode'), ENT_XML1);
+        $companyCountryCode = htmlspecialchars(config('company.country_code'), ENT_XML1);
+        $supplierTaxScheme = '';
+
+        if ($vatNumber = config('company.vat_number')) {
+            $supplierVat = htmlspecialchars($vatNumber, ENT_XML1);
+            $supplierTaxScheme = <<<XML
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>{$supplierVat}</cbc:CompanyID>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+XML;
+        }
 
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -236,27 +253,21 @@ class B2BInvoiceService
     <!-- Accounting Supplier Party (NexusEd Platform) -->
     <cac:AccountingSupplierParty>
         <cac:Party>
-            <cbc:EndpointID schemeID="0088">9482019482012</cbc:EndpointID>
             <cac:PartyIdentification>
-                <cbc:ID>DE309482104</cbc:ID>
+                <cbc:ID>{$companyNumber}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyName>
                 <cbc:Name>{$companyName}</cbc:Name>
             </cac:PartyName>
             <cac:PostalAddress>
-                <cbc:StreetName>Friedrichstraße 200</cbc:StreetName>
-                <cbc:CityName>Berlin</cbc:CityName>
-                <cbc:PostalZone>10117</cbc:PostalZone>
+                <cbc:StreetName>{$companyStreet}</cbc:StreetName>
+                <cbc:CityName>{$companyCity}</cbc:CityName>
+                <cbc:PostalZone>{$companyPostcode}</cbc:PostalZone>
                 <cac:Country>
-                    <cbc:IdentificationCode>DE</cbc:IdentificationCode>
+                    <cbc:IdentificationCode>{$companyCountryCode}</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
-            <cac:PartyTaxScheme>
-                <cbc:CompanyID>DE309482104</cbc:CompanyID>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:PartyTaxScheme>
+{$supplierTaxScheme}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{$companyName}</cbc:RegistrationName>
                 <cbc:CompanyID>{$companyNumber}</cbc:CompanyID>
@@ -372,10 +383,13 @@ XML;
         $totalFmt = number_format((float) $invoice->amount, 2, '.', ',');
         $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
 
-        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
-        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'));
-        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
+        $companyName = htmlspecialchars(config('company.name', 'TRUE CENTRIC LTD'));
+        $companyNumber = htmlspecialchars(config('company.number', '15642952'));
+        $companyAddress = htmlspecialchars(config('company.address', '20 Wenlock Road, London, England, N1 7GU'));
         $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
+        $supplierVatHtml = config('company.vat_number')
+            ? '<strong>VAT / Tax ID:</strong> '.htmlspecialchars(config('company.vat_number'))
+            : '';
 
         $isB2B = (bool) $invoice->company_id;
         $transaction = $invoice->transaction;
@@ -452,9 +466,9 @@ XML;
                 <div class="party-name">{$companyName}</div>
                 <div class="party-desc">
                     {$companyAddress}<br>
-                    <strong>Commercial Register:</strong> {$companyNumber}<br>
+                    <strong>Company Registration:</strong> {$companyNumber}<br>
                     <strong>Billing Inquiries:</strong> {$companyEmail}<br>
-                    <strong>VAT / Tax ID:</strong> DE309482104
+                    {$supplierVatHtml}
                 </div>
             </td>
             <td style="width: 4%;"></td>
@@ -509,7 +523,7 @@ XML;
     </table>
 
     <div class="footer">
-        <div><strong>{$companyName}</strong> &bull; Commercial Register {$companyNumber} &bull; Official Contact: {$companyEmail}</div>
+        <div><strong>{$companyName}</strong> &bull; Company Registration {$companyNumber} &bull; Official Contact: {$companyEmail}</div>
         <div>This tax invoice is electronically generated and digitally certified in accordance with EU Directive 2014/55/EU and Peppol BIS Billing 3.0 standards.</div>
     </div>
 </body>
@@ -534,10 +548,13 @@ HTML;
         $totalFmt = number_format((float) $invoice->amount, 2, '.', ',');
         $dateFmt = $invoice->issued_at ? $invoice->issued_at->format('F d, Y') : date('F d, Y');
 
-        $companyName = htmlspecialchars(config('company.name', 'NexusEd Global GmbH'));
-        $companyNumber = htmlspecialchars(config('company.number', 'HRB 248910 B'));
-        $companyAddress = htmlspecialchars(config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'));
+        $companyName = htmlspecialchars(config('company.name', 'TRUE CENTRIC LTD'));
+        $companyNumber = htmlspecialchars(config('company.number', '15642952'));
+        $companyAddress = htmlspecialchars(config('company.address', '20 Wenlock Road, London, England, N1 7GU'));
         $companyEmail = htmlspecialchars(config('company.email', 'legal@nexused.com'));
+        $supplierVatHtml = config('company.vat_number')
+            ? '<strong>VAT / Tax ID:</strong> '.htmlspecialchars(config('company.vat_number'))
+            : '';
 
         $isB2B = (bool) $invoice->company_id;
         $transaction = $invoice->transaction;
@@ -619,9 +636,9 @@ HTML;
                 <div class="party-name">{$companyName}</div>
                 <div class="party-desc">
                     {$companyAddress}<br>
-                    <strong>Commercial Register:</strong> {$companyNumber}<br>
+                    <strong>Company Registration:</strong> {$companyNumber}<br>
                     <strong>Billing Inquiries:</strong> {$companyEmail}<br>
-                    <strong>VAT / Tax ID:</strong> DE309482104
+                    {$supplierVatHtml}
                 </div>
             </div>
             <div class="party">
@@ -674,7 +691,7 @@ HTML;
         </div>
 
         <div class="footer">
-            <p style="margin: 0 0 4px 0;"><strong>{$companyName}</strong> &bull; Commercial Register {$companyNumber} &bull; Contact: {$companyEmail}</p>
+            <p style="margin: 0 0 4px 0;"><strong>{$companyName}</strong> &bull; Company Registration {$companyNumber} &bull; Contact: {$companyEmail}</p>
             <p style="margin: 0;">This tax invoice is electronically generated and digitally certified in accordance with EU Directive 2014/55/EU and Peppol BIS Billing 3.0 standards.</p>
         </div>
     </div>

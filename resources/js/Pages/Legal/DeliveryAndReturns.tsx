@@ -6,8 +6,8 @@ import { PageProps } from '../../types';
 
 export default function DeliveryAndReturns() {
     const { company } = usePage<PageProps>().props;
-    const companyName = company?.name || 'NexusEd Global GmbH';
-    const companyAddress = company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany';
+    const companyName = company?.name || 'TRUE CENTRIC LTD';
+    const companyAddress = company?.address || '20 Wenlock Road, London, England, N1 7GU';
     const companyEmail = company?.email || 'legal@nexused.com';
 
     return (
@@ -21,7 +21,7 @@ export default function DeliveryAndReturns() {
                     </Link>
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Digital Delivery, Withdrawal &amp; Refund Policy</h1>
                     <p className="text-slate-300 leading-relaxed">How to access your purchase, withdraw from a consumer contract or request help with a refund.</p>
-                    <p className="text-xs text-slate-400">Updated 30 October 2026</p>
+                    <p className="text-xs text-slate-400">Updated 5 November 2026</p>
                 </div>
             </div>
 
@@ -44,10 +44,10 @@ export default function DeliveryAndReturns() {
 
                 <section id="withdrawal" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 space-y-4">
                     <h2 className="text-lg font-bold text-slate-950">2. Consumer right of withdrawal</h2>
-                    <p>If you purchase as a consumer, you have the right to withdraw from your contract within fourteen (14) days without giving any reason. The withdrawal period expires fourteen days after the day the contract is concluded. Where mandatory law provides a later start or a longer period, that law applies.</p>
+                    <p>For consumer distance contracts, the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013 provide a right to cancel. If you purchase as a consumer, you have the right to withdraw from your contract within fourteen (14) days without giving any reason. The withdrawal period expires fourteen days after the day the contract is concluded. Where mandatory law provides a later start or a longer period, that law applies.</p>
                     <p>To exercise this right, inform {companyName}, {companyAddress}, email: <a href={`mailto:${companyEmail}`} className="text-emerald-700 underline">{companyEmail}</a>, of your decision by an unequivocal statement, for example by email or a letter sent by post. You may use the model form below, but it is not obligatory. Sending your withdrawal statement before the period expires is sufficient.</p>
                     <p>Starting or opening a course does not by itself waive your right of withdrawal. We do not treat acceptance of the general Terms or payment alone as a waiver of that right.</p>
-                    <p>This right applies to consumers acting for purposes outside their trade, business or profession. Statutory consumer withdrawal rights do not generally apply to purchases made for business purposes; see section 5.</p>
+                    <p>This right applies to consumers acting for purposes wholly or mainly outside their trade, business, craft or profession. Statutory consumer withdrawal rights do not generally apply to purchases made for business purposes; see section 5.</p>
                 </section>
 
                 <section className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 space-y-4">

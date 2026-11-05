@@ -170,11 +170,11 @@
                                 <tr>
                                     <td>
                                         <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">
-                                            {{ $company['name'] ?? 'NexusEd Global GmbH' }}
+                                            {{ $company['name'] ?? 'TRUE CENTRIC LTD' }}
                                         </div>
                                         <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                                            Commercial Register: <span style="font-family: monospace; color: #cbd5e1;">{{ $company['number'] ?? 'HRB 248910 B' }}</span><br>
-                                            Registered Office: {{ $company['address'] ?? 'Friedrichstraße 200, 10117 Berlin, Germany' }}<br>
+                                            Company Registration: <span style="font-family: monospace; color: #cbd5e1;">{{ $company['number'] ?? '15642952' }}</span><br>
+                                            Registered Office: {{ $company['address'] ?? '20 Wenlock Road, London, England, N1 7GU' }}<br>
                                             Billing Inquiries: <a href="mailto:{{ $company['email'] ?? 'info@nexused.co.uk' }}" style="color: #34d399; text-decoration: none;">{{ $company['email'] ?? 'info@nexused.co.uk' }}</a>
                                         </div>
                                     </td>

@@ -23,9 +23,9 @@ import {
 export default function Terms() {
     const { company } = usePage<PageProps>().props;
 
-    const companyName = company?.name || 'NexusEd Global GmbH';
-    const companyNumber = company?.number || 'HRB 248910 B';
-    const companyAddress = company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany';
+    const companyName = company?.name || 'TRUE CENTRIC LTD';
+    const companyNumber = company?.number || '15642952';
+    const companyAddress = company?.address || '20 Wenlock Road, London, England, N1 7GU';
     const companyEmail = company?.email || 'legal@nexused.com';
 
     const handlePrint = () => {
@@ -69,7 +69,7 @@ export default function Terms() {
                     <div className="space-y-3 max-w-3xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
                             <Scale className="w-3.5 h-3.5" />
-                            <span>USER AGREEMENT • UPDATED 30 OCTOBER 2026</span>
+                            <span>USER AGREEMENT • UPDATED 5 NOVEMBER 2026</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
                             Terms of Service
@@ -90,7 +90,7 @@ export default function Terms() {
 
                         <div className="p-3.5 rounded-xl bg-slate-800/50 border border-slate-700/60 space-y-1">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                                <FileText className="w-3.5 h-3.5 text-sky-400" /> Commercial Register
+                                <FileText className="w-3.5 h-3.5 text-sky-400" /> Company Registration
                             </span>
                             <div className="text-xs font-bold text-white font-mono truncate">{companyNumber}</div>
                         </div>
@@ -175,12 +175,12 @@ export default function Terms() {
                         <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                             <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
                                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                                <span>Statutory Accreditations</span>
+                                <span>Customer Information</span>
                             </div>
                             <ul className="text-xs text-slate-600 space-y-2">
                                 <li className="flex items-center gap-2">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                                    <span>EU Directive 2014/55/EU E-Invoicing</span>
+                                    <span>Registered in England and Wales</span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -203,7 +203,7 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 1.0</span>
                             </div>
                             <p>
-                                These Terms of Service (&ldquo;Agreement&rdquo;) constitute a legally binding agreement between you (&ldquo;User&rdquo;, &ldquo;Student&rdquo;, or &ldquo;Corporate Customer&rdquo;) and <strong className="text-slate-950">{companyName}</strong>, registered in the commercial register under registration number <strong className="text-slate-950 font-mono">{companyNumber}</strong>, having its registered seat at <strong className="text-slate-950">{companyAddress}</strong> (&ldquo;NexusEd&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;).
+                                These Terms of Service (&ldquo;Agreement&rdquo;) constitute a legally binding agreement between you (&ldquo;User&rdquo;, &ldquo;Student&rdquo;, or &ldquo;Corporate Customer&rdquo;) and <strong className="text-slate-950">{companyName}</strong>, registered in England and Wales under company number <strong className="text-slate-950 font-mono">{companyNumber}</strong>, having its registered office at <strong className="text-slate-950">{companyAddress}</strong> (&ldquo;NexusEd&rdquo;, &ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;).
                             </p>
                             <p>
                                 By creating an account, enrolling in coursework, generating synthetic courses, or purchasing enterprise licensing, you expressly agree to be bound by these terms. If you are entering into this Agreement on behalf of a legal entity, you represent that you possess the legal authority to bind that entity.
@@ -278,7 +278,7 @@ export default function Terms() {
                                 Corporate team licenses are available as one-time purchases of employee seats. They do not automatically renew or create recurring subscription charges. Corporate administrators may allocate seats up to the purchased limit and monitor employee educational progress through the corporate portal. The scope of access is described in the selected offer and order confirmation.
                             </p>
                             <p>
-                                In accordance with the <strong>European Directive 2014/55/EU</strong>, corporate purchases generate fully compliant <strong>Peppol BIS 3.0 (UBL 2.1 XML)</strong> electronic invoices containing valid European VAT identifiers and cryptographic transaction audit records.
+                                Corporate customers can access invoices through the corporate portal, including electronic invoice exports. Applicable tax treatment depends on the transaction and the relevant tax requirements.
                             </p>
                         </section>
 
@@ -300,10 +300,10 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 7.0</span>
                             </div>
                             <p>
-                                We are liable without limitation for intent and gross negligence, for culpable injury to life, body or health, and wherever liability is mandatory by law, including under the German Product Liability Act. Liability under an expressly assumed guarantee remains subject to that guarantee.
+                                Nothing in these Terms excludes or limits our liability for death or personal injury caused by negligence, fraud or fraudulent misrepresentation, or any other liability that cannot lawfully be excluded or limited. Your statutory rights under the Consumer Rights Act 2015 and other applicable consumer protection laws remain unaffected.
                             </p>
                             <p>
-                                For ordinary negligence, we are liable for breach of an essential contractual obligation whose performance is necessary for the proper execution of the contract and on which you may normally rely. In that case, liability is limited to damage that was foreseeable and typical for the contract when it was concluded. Otherwise, liability for ordinary negligence is excluded, subject to the exceptions above.
+                                If you are a consumer, we are responsible for loss or damage you suffer that is a foreseeable result of our breach of these Terms or our failure to use reasonable care and skill. Loss or damage is foreseeable if it is an obvious consequence of the breach or was contemplated by you and us when the contract was made. We do not exclude your statutory remedies for digital content or services that do not conform to the contract.
                             </p>
                             <p>
                                 Your statutory rights concerning the supply and conformity of digital products, including remedies for defects, remain unaffected. These Terms do not exclude mandatory consumer rights or provide a blanket exclusion of warranties.
@@ -317,16 +317,16 @@ export default function Terms() {
                                 <span className="text-xs font-mono font-bold text-slate-400">§ 8.0</span>
                             </div>
                             <p>
-                                This Agreement is governed by the laws of the Federal Republic of Germany. If you are a consumer, this choice does not deprive you of the protection of mandatory provisions of the law that would apply without this choice, including the law of your habitual residence where Article 6 of Regulation (EC) No 593/2008 (Rome I) applies.
+                                This Agreement is governed by the laws of England and Wales. If you are a consumer, this choice does not deprive you of the protection of mandatory provisions of the law that would apply without this choice, including applicable consumer protection laws of the country where you habitually reside.
                             </p>
                             <p>
-                                For consumers, jurisdiction is determined by applicable law, including Articles 17–19 of Regulation (EU) No 1215/2012 where applicable. No exclusive Berlin jurisdiction is imposed on consumers. For business customers who are merchants, legal entities under public law or special funds under public law, the courts of Berlin have exclusive jurisdiction to the extent a jurisdiction agreement is legally permitted. Mandatory jurisdiction rules remain unaffected.
+                                For business customers, the courts of England and Wales have exclusive jurisdiction, subject to mandatory jurisdiction rules. If you are a consumer, you may bring proceedings in the courts of England and Wales or in any other court available to you under applicable mandatory law, including the courts of your place of residence where those rules allow. Nothing in these Terms restricts those consumer rights.
                             </p>
                             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
                                 <div className="font-bold text-slate-900">Official Legal Notice Address:</div>
                                 <div className="text-slate-700 leading-relaxed font-mono">
                                     {companyName}<br />
-                                    Commercial Register: {companyNumber}<br />
+                                    Company Registration: {companyNumber}<br />
                                     {companyAddress}<br />
                                     Email: <a href={`mailto:${companyEmail}`} className="text-emerald-700 underline">{companyEmail}</a>
                                 </div>

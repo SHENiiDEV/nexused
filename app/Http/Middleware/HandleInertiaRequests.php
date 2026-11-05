@@ -51,9 +51,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'appName' => config('app.name', 'NexusEd'),
             'company' => [
-                'name' => config('company.name', 'NexusEd Global GmbH'),
-                'number' => config('company.number', 'HRB 248910 B'),
-                'address' => config('company.address', 'Friedrichstraße 200, 10117 Berlin, Germany'),
+                'name' => config('company.name', 'TRUE CENTRIC LTD'),
+                'number' => config('company.number', '15642952'),
+                'address' => config('company.address', '20 Wenlock Road, London, England, N1 7GU'),
                 'email' => config('company.email', 'legal@nexused.com'),
             ],
         ];

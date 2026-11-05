@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Mail\SendQueuedMailable;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -85,7 +86,7 @@ class EmailNotificationTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson(['success' => true, 'status' => 'completed']);
 
-        Mail::assertQueued(CoursePurchasedEmail::class, function ($mail) use ($user, $transaction) {
+        Mail::assertQueued(CoursePurchasedEmail::class, function ($mail) use ($transaction) {
             return $mail->hasTo('buyer@example.com') &&
                    $mail->transaction->id === $transaction->id;
         });
@@ -106,7 +107,7 @@ class EmailNotificationTest extends TestCase
         $this->assertStringContainsString('Welcome to NexusEd, John!', $html);
         $this->assertStringContainsString('john.doe@example.com', $html);
         $this->assertStringContainsString('NexusEd Global', $html);
-        $this->assertStringContainsString('HRB 248910 B', $html);
+        $this->assertStringContainsString('15642952', $html);
     }
 
     public function test_course_purchased_email_view_renders_properly(): void
@@ -155,12 +156,12 @@ class EmailNotificationTest extends TestCase
 
         // Verify that a fresh queued mailable can be safely queued and serialized into JSON payload
         $freshMailable = new CoursePurchasedEmail($transaction, $user, $course);
-        $queuedJob = new \Illuminate\Mail\SendQueuedMailable($freshMailable);
+        $queuedJob = new SendQueuedMailable($freshMailable);
         $payload = json_encode([
             'job' => 'Illuminate\Queue\CallQueuedHandler@call',
             'data' => ['command' => serialize(clone $queuedJob)],
         ]);
-        $this->assertNotFalse($payload, 'JSON error: ' . json_last_error_msg());
+        $this->assertNotFalse($payload, 'JSON error: '.json_last_error_msg());
         $this->assertEquals(JSON_ERROR_NONE, json_last_error());
     }
 }

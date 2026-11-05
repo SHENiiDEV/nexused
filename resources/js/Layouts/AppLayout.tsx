@@ -457,7 +457,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                                     Nexus<span className="text-emerald-400">Ed</span> Global
                                 </span>
                                 <p className="text-xs text-slate-400 mt-1 max-w-xl leading-relaxed">
-                                    Operated by <strong className="text-slate-200">{company?.name || 'NexusEd Global GmbH'}</strong> (Reg. No: {company?.number || 'HRB 248910 B'}). Professional education platform with verified certificates and enterprise compliance.
+                                    Operated by <strong className="text-slate-200">{company?.name || 'TRUE CENTRIC LTD'}</strong> (Reg. No: {company?.number || '15642952'}). Professional education platform with verified certificates and enterprise compliance.
                                 </p>
                             </div>
                         </div>
@@ -564,12 +564,12 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                         <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2 text-slate-300">
                                 <img src="/favicon.svg" alt="NexusEd" className="w-5 h-5 rounded" />
-                                <span className="font-semibold text-white">{company?.name || 'NexusEd Global GmbH'}</span>
+                                <span className="font-semibold text-white">{company?.name || 'TRUE CENTRIC LTD'}</span>
                                 <span>•</span>
-                                <span>Reg. No: <span className="font-mono text-slate-200">{company?.number || 'HRB 248910 B'}</span></span>
+                                <span>Reg. No: <span className="font-mono text-slate-200">{company?.number || '15642952'}</span></span>
                             </div>
                             <div className="text-slate-500">
-                                Registered Office: {company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany'}
+                                Registered Office: {company?.address || '20 Wenlock Road, London, England, N1 7GU'}
                             </div>
                         </div>
                         <div className="flex items-center gap-3 shrink-0">

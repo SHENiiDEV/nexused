@@ -23,9 +23,9 @@ import {
 export default function Privacy() {
     const { company } = usePage<PageProps>().props;
 
-    const companyName = company?.name || 'NexusEd Global GmbH';
-    const companyNumber = company?.number || 'HRB 248910 B';
-    const companyAddress = company?.address || 'Friedrichstraße 200, 10117 Berlin, Germany';
+    const companyName = company?.name || 'TRUE CENTRIC LTD';
+    const companyNumber = company?.number || '15642952';
+    const companyAddress = company?.address || '20 Wenlock Road, London, England, N1 7GU';
     const companyEmail = company?.email || 'legal@nexused.com';
 
     const handlePrint = () => {
@@ -69,13 +69,13 @@ export default function Privacy() {
                     <div className="space-y-3 max-w-3xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
                             <ShieldCheck className="w-3.5 h-3.5" />
-                            <span>GDPR (EU) 2016/679 DATA PROTECTION NOTICE</span>
+                            <span>UK GDPR &amp; DATA PROTECTION ACT 2018 NOTICE</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
                             Privacy Policy
                         </h1>
                         <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                            How we collect, encrypt, tokenize, and safeguard your personal and payment data in strict accordance with the European Union General Data Protection Regulation (GDPR).
+                            How we handle personal data under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018, as amended. The EU GDPR also applies where its territorial scope covers our processing.
                         </p>
                     </div>
 
@@ -90,7 +90,7 @@ export default function Privacy() {
 
                         <div className="p-3.5 rounded-xl bg-slate-800/50 border border-slate-700/60 space-y-1">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                                <FileText className="w-3.5 h-3.5 text-sky-400" /> Commercial Register
+                                <FileText className="w-3.5 h-3.5 text-sky-400" /> Company Registration
                             </span>
                             <div className="text-xs font-bold text-white font-mono truncate">{companyNumber}</div>
                         </div>
@@ -104,7 +104,7 @@ export default function Privacy() {
 
                         <div className="p-3.5 rounded-xl bg-slate-800/50 border border-slate-700/60 space-y-1">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                                <Mail className="w-3.5 h-3.5 text-amber-400" /> DPO / Privacy Inquiries
+                                <Mail className="w-3.5 h-3.5 text-amber-400" /> Privacy Inquiries
                             </span>
                             <div className="text-xs font-bold text-white truncate">
                                 <a href={`mailto:${companyEmail}`} className="hover:text-emerald-400 underline">
@@ -203,11 +203,11 @@ export default function Privacy() {
                                 <span className="text-xs font-mono font-bold text-slate-400">Art. 4(7) GDPR</span>
                             </div>
                             <p>
-                                The Data Controller responsible for the collection and processing of personal data on this platform under Article 4(7) of the EU General Data Protection Regulation (GDPR) is:
+                                The Data Controller responsible for the collection and processing of personal data on this platform under the UK GDPR and, where applicable, the EU GDPR is:
                             </p>
                             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1 text-slate-800">
                                 <div><strong className="text-slate-950">{companyName}</strong></div>
-                                <div>Commercial Register: {companyNumber}</div>
+                                <div>Company Registration: {companyNumber}</div>
                                 <div>{companyAddress}</div>
                                 <div>Data Protection Contact: <a href={`mailto:${companyEmail}`} className="text-emerald-700 underline">{companyEmail}</a></div>
                             </div>
@@ -220,7 +220,7 @@ export default function Privacy() {
                                 <span className="text-xs font-mono font-bold text-slate-400">Art. 13 GDPR</span>
                             </div>
                             <p>
-                                We collect and process only the minimum necessary data points required to verify your identity, process transactions, deliver certified educational curricula, and comply with European tax laws:
+                                We collect and process only the minimum necessary data points required to verify your identity, process transactions, deliver certified educational curricula, and comply with applicable tax laws:
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
@@ -233,7 +233,7 @@ export default function Privacy() {
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
                                     <strong className="text-slate-950">Billing &amp; Tax Compliance</strong>
-                                    <p className="text-slate-600">Street, city, country, and postal code for mandatory EU VAT computation and Peppol UBL invoices.</p>
+                                    <p className="text-slate-600">Street, city, country, and postal code for billing, applicable tax requirements and electronic invoices.</p>
                                 </div>
                                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
                                     <strong className="text-slate-950">Learning Transcripts</strong>
@@ -249,14 +249,14 @@ export default function Privacy() {
                                 <span className="text-xs font-mono font-bold text-slate-400">Art. 6 GDPR</span>
                             </div>
                             <p>
-                                Every processing activity performed by NexusEd is underpinned by a lawful basis under Article 6(1) of the GDPR:
+                                Every processing activity performed by NexusEd is underpinned by a lawful basis under Article 6(1) of the UK GDPR and, where applicable, the EU GDPR:
                             </p>
                             <ul className="list-disc pl-5 space-y-2 text-xs text-slate-600">
                                 <li>
                                     <strong className="text-slate-900">Performance of a Contract (Art. 6(1)(b)):</strong> Delivering course curriculum, managing user accounts, and issuing verified certificates.
                                 </li>
                                 <li>
-                                    <strong className="text-slate-900">Legal Obligation (Art. 6(1)(c)):</strong> Generating tax-compliant invoices, maintaining accounting records pursuant to German Commercial Code (HGB), and complying with international trade sanctions.
+                                    <strong className="text-slate-900">Legal Obligation (Art. 6(1)(c)):</strong> Generating tax-compliant invoices, maintaining accounting records under applicable UK company and tax requirements, and complying with international trade sanctions.
                                 </li>
                                 <li>
                                     <strong className="text-slate-900">Legitimate Interest (Art. 6(1)(f)):</strong> Platform security monitoring, defending against DDoS and credential stuffing, and cryptographic audit log maintenance.
@@ -291,7 +291,7 @@ export default function Privacy() {
                                 <span className="text-xs font-mono font-bold text-slate-400">Arts. 15-22 GDPR</span>
                             </div>
                             <p>
-                                As an EU data subject, you hold comprehensive rights regarding your personal data processed by {companyName}:
+                                Under the UK GDPR and, where applicable, the EU GDPR, you have rights regarding your personal data processed by {companyName}, subject to the conditions and exemptions in the applicable law:
                             </p>
                             <div className="space-y-2 text-xs">
                                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
@@ -319,7 +319,7 @@ export default function Privacy() {
                                 Personal profile data is retained for as long as necessary to provide your account and services. You may request erasure using the contact details in this policy. Data that must be retained to comply with a legal obligation or to establish, exercise or defend legal claims is retained only for that purpose and for the applicable period.
                             </p>
                             <p>
-                                Where German tax retention requirements apply, Section 147(3) of the German Fiscal Code (AO) generally requires accounting vouchers, including invoices, to be retained for eight (8) years; specified books and annual accounts for ten (10) years; and other covered records generally for six (6) years. Under Section 147(4) AO, the period generally starts at the end of the calendar year in which the relevant record was created or the relevant event occurred. Longer retention may be required where statutory extensions apply, including for unresolved tax matters. Electronic invoices, including Peppol UBL records, follow the period applicable to their document category; the format does not itself require ten years of retention.
+                                Company accounting and tax records, including invoices and supporting transaction records, are generally retained for six (6) years from the end of the last company financial year to which they relate, in accordance with applicable UK record-keeping requirements. We retain relevant records for longer where required, for example for transactions spanning accounting periods, long-lived assets, a late Company Tax Return or an HMRC compliance check. Electronic invoice formats do not by themselves determine the retention period.
                             </p>
                         </section>
 
@@ -342,11 +342,11 @@ export default function Privacy() {
                         {/* Section 8 */}
                         <section id="sec-dpo-contact" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
                             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                                <h2 className="text-lg font-bold text-slate-950">8. Data Protection Officer &amp; Regulatory Supervision</h2>
-                                <span className="text-xs font-mono font-bold text-slate-400">Art. 37 GDPR</span>
+                                <h2 className="text-lg font-bold text-slate-950">8. Privacy Contact &amp; Regulatory Supervision</h2>
+                                <span className="text-xs font-mono font-bold text-slate-400">UK GDPR</span>
                             </div>
                             <p>
-                                To exercise your GDPR rights or submit a privacy inquiry, please contact our Data Protection Officer directly:
+                                To exercise your GDPR rights or submit a privacy inquiry, please contact our privacy team:
                             </p>
                             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
                                 <div className="font-bold text-slate-900">Direct Inquiries:</div>
@@ -356,7 +356,7 @@ export default function Privacy() {
                                     Email: <a href={`mailto:${companyEmail}`} className="text-emerald-700 underline">{companyEmail}</a>
                                 </div>
                                 <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-200">
-                                    You also have the right to lodge a complaint with a supervisory authority, in particular in the Member State of your habitual residence or the Berlin Commissioner for Data Protection and Freedom of Information (Berliner Beauftragte für Datenschutz und Informationsfreiheit).
+                                    You have the right to complain to the UK Information Commissioner’s Office (ICO) about our handling of your personal data. You can find details at <a href="https://ico.org.uk/make-a-complaint/" className="text-emerald-700 underline">ico.org.uk/make-a-complaint</a>. Where the EU GDPR applies, you may also complain to a competent EU supervisory authority, including the authority in your habitual place of residence, place of work or place of the alleged infringement.
                                 </p>
                             </div>
                         </section>
