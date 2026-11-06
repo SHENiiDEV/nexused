@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Course } from '../types';
-import { Check, CreditCard, Lock, Shield, ShieldCheck, X } from 'lucide-react';
-import { router } from '@inertiajs/react';
+import { CreditCard, ExternalLink, Lock, Shield, ShieldCheck, X } from 'lucide-react';
 
 interface CheckoutModalProps {
     isOpen: boolean;
@@ -21,12 +20,6 @@ export function CheckoutModal({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    // Credit Card Fields
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
-    const [cardCvc, setCardCvc] = useState('');
-    const [cardholderName, setCardholderName] = useState('');
-
     if (!isOpen) return null;
 
     const basePrice = Number(course.price) || 49.0;
@@ -39,20 +32,6 @@ export function CheckoutModal({
 
     const vatAmount = Math.round(calculatedPrice * 0.19 * 100) / 100;
     const totalPrice = Math.round((calculatedPrice + vatAmount) * 100) / 100;
-
-    const formatCardNumber = (val: string) => {
-        const cleaned = val.replace(/\D/g, '').slice(0, 16);
-        const parts = cleaned.match(/.{1,4}/g);
-        return parts ? parts.join(' ') : cleaned;
-    };
-
-    const formatExpiry = (val: string) => {
-        const cleaned = val.replace(/\D/g, '').slice(0, 4);
-        if (cleaned.length >= 3) {
-            return cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4);
-        }
-        return cleaned;
-    };
 
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,7 +49,7 @@ export function CheckoutModal({
                 body: JSON.stringify({
                     course_id: course.id,
                     type: purchaseType,
-                    gateway: 'credit_card',
+                    gateway: 'corefy',
                     seats: isB2B ? seats : undefined,
                 }),
             });
@@ -81,31 +60,16 @@ export function CheckoutModal({
                 throw new Error(data.message || data.error || 'Checkout initialization failed');
             }
 
-            // Complete card acquiring payment simulation
-            const completeRes = await fetch(`/checkout/transactions/${data.init.reference}/complete-mock`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
-                },
-            });
-
-            if (!completeRes.ok) {
-                // If 3DS redirect required
-                if (data.init?.redirect_url) {
-                    router.visit(data.init.redirect_url);
-                    return;
-                }
+            // Redirect flow: instantly redirect customer to Hosted Payment Page (Sterling-Pay / CardGate)
+            const redirectUrl = data.init?.hppUrl || data.init?.redirect_url || data.hppUrl || data.redirect_url;
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+                return;
             }
 
-            if (isB2B) {
-                router.visit('/corporate/dashboard');
-            } else {
-                router.visit(`/learn/${course.slug}`);
-            }
+            throw new Error('Payment gateway did not provide a valid redirect URL.');
         } catch (err: any) {
-            setErrorMessage(err.message || 'Credit card processing failed. Please verify your details.');
+            setErrorMessage(err.message || 'Payment initiation failed. Please try again.');
             setIsLoading(false);
         }
     };
@@ -179,7 +143,7 @@ export function CheckoutModal({
                     </div>
                 )}
 
-                {/* Payment Gateway: ONLY Credit Card */}
+                {/* Payment Gateway: Redirect Flow to Sterling-Pay / CardGate HPP */}
                 <form onSubmit={handleCheckout} className="space-y-4 mb-5">
                     <div className="p-4 rounded-2xl border-2 border-slate-900 bg-slate-50/50 space-y-3.5">
                         <div className="flex items-center justify-between pb-2 border-b border-slate-200">
@@ -187,7 +151,7 @@ export function CheckoutModal({
                                 <div className="p-1.5 rounded-lg bg-slate-900 text-white">
                                     <CreditCard className="w-4 h-4" />
                                 </div>
-                                <span className="font-bold text-sm text-slate-950">Credit Card</span>
+                                <span className="font-bold text-sm text-slate-950">Credit / Debit Card</span>
                             </div>
                             <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
                                 <span className="text-blue-600">VISA</span>
@@ -198,76 +162,29 @@ export function CheckoutModal({
                             </div>
                         </div>
 
-                        {/* Cardholder Name */}
-                        <div>
-                            <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                                Cardholder Name
-                            </label>
-                            <input
-                                type="text"
-                                required
-                                value={cardholderName}
-                                onChange={(e) => setCardholderName(e.target.value)}
-                                placeholder="ALEX MORGAN"
-                                className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 uppercase font-mono"
-                            />
-                        </div>
-
-                        {/* Card Number */}
-                        <div>
-                            <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                                Card Number
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    required
-                                    maxLength={19}
-                                    value={cardNumber}
-                                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                                    placeholder="4242 •••• •••• 4242"
-                                    className="w-full pl-3.5 pr-10 py-2 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-wider"
-                                />
-                                <Lock className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
-                            </div>
-                        </div>
-
-                        {/* Expiry & CVC */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                                    Expires (MM/YY)
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    maxLength={5}
-                                    value={cardExpiry}
-                                    onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
-                                    placeholder="12/28"
-                                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono text-center"
-                                />
+                        {/* Redirect Flow Notice */}
+                        <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2">
+                            <div className="flex items-start gap-2.5">
+                                <Shield className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                                <div className="text-xs text-slate-600 leading-relaxed">
+                                    <p className="font-semibold text-slate-900 mb-1">
+                                        Secure Payment via Sterling-Pay CardGate
+                                    </p>
+                                    <p>
+                                        You will be redirected to the secure Hosted Payment Page to enter your card details and complete 3D-Secure 2.2 authentication.
+                                    </p>
+                                </div>
                             </div>
 
-                            <div>
-                                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                                    CVC / CVV
-                                </label>
-                                <input
-                                    type="password"
-                                    required
-                                    maxLength={4}
-                                    value={cardCvc}
-                                    onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                                    placeholder="•••"
-                                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono text-center tracking-widest"
-                                />
+                            <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500 font-medium">
+                                <span className="flex items-center gap-1">
+                                    <Lock className="w-3 h-3 text-emerald-600" /> PCI-DSS Level 1
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <ShieldCheck className="w-3 h-3 text-emerald-600" /> 3D-Secure 2.2
+                                </span>
+                                <span>Instant Enrollment</span>
                             </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 pt-1 text-[11px] text-slate-500">
-                            <Shield className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span>Protected with 3D-Secure 2.2 authentication and anti-fraud checks.</span>
                         </div>
                     </div>
 
@@ -302,17 +219,18 @@ export function CheckoutModal({
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold text-sm transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                     >
                         {isLoading ? (
                             <>
                                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <span>Verifying Card &amp; 3D-Secure...</span>
+                                <span>Redirecting to Payment Gateway...</span>
                             </>
                         ) : (
                             <>
                                 <Lock className="w-4 h-4 text-emerald-400" />
                                 <span>Pay €{totalPrice.toFixed(2)} with Credit Card</span>
+                                <ExternalLink className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
                             </>
                         )}
                     </button>

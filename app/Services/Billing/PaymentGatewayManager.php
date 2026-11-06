@@ -18,17 +18,21 @@ class PaymentGatewayManager
 
     public function __construct()
     {
-        $cardaq = new CardaqGateway();
-        $this->register('credit_card', $cardaq);
+        $corefy = new CorefyGateway;
+        $this->register('corefy', $corefy);
+        $this->register('credit_card', $corefy);
+        $this->register('card', $corefy);
+
+        $cardaq = new CardaqGateway;
         $this->register('cardaq', $cardaq);
-        $this->register('corefy', new CorefyGateway());
-        $this->register('apple_pay', new ApplePayGateway());
-        $this->register('mock', new MockGateway());
+        $this->register('apple_pay', new ApplePayGateway);
+        $this->register('mock', new MockGateway);
     }
 
     public function register(string $name, PaymentGatewayInterface $driver): self
     {
         $this->drivers[strtolower($name)] = $driver;
+
         return $this;
     }
 
@@ -41,7 +45,7 @@ class PaymentGatewayManager
             return $this->drivers['credit_card'] ?? $this->drivers['mock'];
         }
 
-        if (!isset($this->drivers[$name])) {
+        if (! isset($this->drivers[$name])) {
             throw new InvalidArgumentException("Unsupported payment gateway driver: [{$name}]");
         }
 
