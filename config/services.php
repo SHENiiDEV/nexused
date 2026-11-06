@@ -41,12 +41,15 @@ return [
     ],
 
     'corefy' => [
+        'api_url' => env('COREFY_API_URL', 'https://api.sterling-pay.com'),
+        'account_id' => env('COREFY_ACCOUNT_ID'),
+        'api_key' => env('COREFY_API_KEY'),
         'webhook_secret' => env('COREFY_WEBHOOK_SECRET', env('COREFY_SECRET_KEY', 'your_webhook_secret')),
         'secret_key' => env('COREFY_SECRET_KEY', env('COREFY_WEBHOOK_SECRET', 'your_webhook_secret')),
-        'api_key' => env('COREFY_API_KEY'),
-        'commerce_id' => env('COREFY_COMMERCE_ID', 'com_nexus_eu'),
-        'api_url' => env('COREFY_API_URL', 'https://api.sterling-pay.com'),
-        'cardgate_url' => env('COREFY_CARDGATE_URL', 'https://checkout.s-pay.finance'),
+        'service' => env('COREFY_SERVICE', 'payment_card_eur_hpp'),
+        'currency' => env('COREFY_CURRENCY', 'EUR'),
+        'test_mode' => filter_var(env('COREFY_TEST_MODE', false), FILTER_VALIDATE_BOOLEAN),
+        'commerce_id' => env('COREFY_COMMERCE_ID'),
     ],
 
 ];
