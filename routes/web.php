@@ -6,6 +6,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LearnController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -79,4 +80,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // Webhook Ingress (Excluded from CSRF in bootstrap/app.php)
+Route::post('/payments/corefy/webhook', [PaymentController::class, 'webhook'])->name('payments.corefy.webhook');
+Route::get('/payment/return', [PaymentController::class, 'returnPage'])->name('payment.return');
 Route::post('/webhooks/{gateway}', [WebhookController::class, 'handle'])->name('webhooks.gateway');

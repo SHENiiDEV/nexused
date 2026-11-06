@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Transaction extends Model
 {
@@ -46,8 +47,13 @@ class Transaction extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function invoice(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class);
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'transaction_ref', 'reference');
     }
 }

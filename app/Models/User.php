@@ -26,6 +26,7 @@ class User extends Authenticatable
         'address_postcode',
         'terms_accepted',
         'terms_accepted_at',
+        'balance',
         'password',
         'role',
         'company_id',
@@ -48,6 +49,7 @@ class User extends Authenticatable
             'terms_accepted_at' => 'datetime',
             'xp' => 'integer',
             'streak_days' => 'integer',
+            'balance' => 'decimal:2',
             'password' => 'hashed',
         ];
     }
@@ -85,6 +87,11 @@ class User extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 
     public function invoices(): HasMany
