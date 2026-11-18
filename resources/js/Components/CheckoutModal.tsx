@@ -30,8 +30,7 @@ export function CheckoutModal({
         ? Math.min(2000, Math.round(basePrice * seats * 0.75 * 100) / 100)
         : basePrice;
 
-    const vatAmount = Math.round(calculatedPrice * 0.19 * 100) / 100;
-    const totalPrice = Math.round((calculatedPrice + vatAmount) * 100) / 100;
+    const totalPrice = calculatedPrice;
 
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -191,12 +190,8 @@ export function CheckoutModal({
                     {/* Price Breakdown */}
                     <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 divide-y divide-slate-200/80 text-xs">
                         <div className="flex justify-between pb-1.5 text-slate-600">
-                            <span>Subtotal (Net):</span>
+                            <span>Subtotal:</span>
                             <span className="font-mono font-semibold text-slate-900">€{calculatedPrice.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between py-1.5 text-slate-600">
-                            <span>EU VAT (19%):</span>
-                            <span className="font-mono font-semibold text-slate-900">€{vatAmount.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between pt-1.5 text-sm font-bold text-slate-950">
                             <span>Total Due:</span>

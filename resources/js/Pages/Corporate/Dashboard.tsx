@@ -418,7 +418,7 @@ export default function Dashboard({ company, employees, invoices, courses, avail
                                         <th className="p-4">Invoice #</th>
                                         <th className="p-4">Issued Date</th>
                                         <th className="p-4">Total Paid</th>
-                                        <th className="p-4">VAT (19%)</th>
+                                        <th className="p-4">Tax / VAT</th>
                                         <th className="p-4">Status</th>
                                         <th className="p-4 text-right">Actions</th>
                                     </tr>

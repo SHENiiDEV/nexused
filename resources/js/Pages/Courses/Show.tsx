@@ -159,7 +159,6 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
                                 </div>
                                 <div className="text-4xl font-extrabold text-slate-950 font-mono flex items-baseline gap-2">
                                     <span>€{Number(course.price).toFixed(2)}</span>
-                                    <span className="text-xs text-slate-500 font-sans font-normal">+ EU VAT</span>
                                 </div>
                             </div>
 
@@ -235,7 +234,6 @@ export default function Show({ course, isEnrolled, completedLessonsCount, availa
                     </div>
                     <div className="text-base sm:text-lg font-black text-slate-950 font-mono flex items-baseline gap-1">
                         <span>€{Number(course.price).toFixed(2)}</span>
-                        <span className="text-[10px] text-slate-500 font-sans font-normal">+ VAT</span>
                     </div>
                 </div>
 
